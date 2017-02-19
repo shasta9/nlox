@@ -1,19 +1,19 @@
 ﻿namespace Nlox {
     internal class Token {
-        private TokenType type;
-        private string lexeme;
-        private object literal;
-        private int line;
+        public TokenType Type { get; }
+        public string Lexeme { get; }
+        public object Literal { get; }
+        public int Line { get; }
 
-       internal Token(TokenType type, string lexeme, object literal, int line) {
-            this.type = type;
-            this.lexeme = lexeme;
-            this.literal = literal;
-            this.line = line;
+        internal Token(TokenType type, string lexeme, object literal, int line) {
+            Type = type;
+            Lexeme = lexeme;
+            Literal = literal;
+            Line = line;
         }
 
         public override string ToString() {
-            return $"{type} {lexeme} {literal}";
+            return $"{Type} {Lexeme} {Literal}";
         }
     }
 }
