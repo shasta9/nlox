@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1626DA08-212C-437F-B95D-C8FD96D7C174}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>nlox</RootNamespace>
-    <AssemblyName>nlox</AssemblyName>
+    <RootNamespace>NLox</RootNamespace>
+    <AssemblyName>nLox</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -57,7 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Nlox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="Token.cs" />

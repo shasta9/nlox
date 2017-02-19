@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace nlox {
+namespace Nlox {
     internal class Scanner {
         private string source;
         private List<Token> tokens = new List<Token>();
@@ -62,8 +62,9 @@ namespace nlox {
                 case '\n':
                     line++;
                     break;
+                case '"': StringLiteral(); break;
                 default:
-                    Nlox.Error(line, "Unexpected character.");
+                    nLox.Error(line, "Unexpected character.");
                     break;
             }
         }
@@ -81,15 +82,34 @@ namespace nlox {
             string text = source.Substring(start, current - start);
             tokens.Add(new Token(type, text, literal, line));
         }
+
         private bool Match(char expected) {
             if (IsAtEnd()) return false;
             if (source[current] != expected) return false;
             current++;
             return true;
         }
+
         private char Peek() {
             if (current >= source.Length) return '\0';
             return source[current];
+        }
+
+        private void StringLiteral() {
+            while (Peek() != '"' && !IsAtEnd()) {
+                if (Peek() == '\n') line++;
+                Advance();
+            }
+            // Unterminated string.
+            if (IsAtEnd()) {
+                nLox.Error(line, "Unterminated string.");
+                return;
+            }
+            // The closing ".
+            Advance();
+            // Trim the surrounding quotes.
+            String value = source.Substring(start + 1, current - start - 2);
+            AddToken(TokenType.STRING, value);
         }
     }
 }

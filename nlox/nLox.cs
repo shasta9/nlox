@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace nlox {
-    class Nlox {
+namespace Nlox {
+    class nLox {
 
         static bool hadError = false;
 
@@ -51,7 +51,7 @@ namespace nlox {
         }
 
         internal static void Report(int line, string where, string message) {
-            Console.WriteLine($"[line [{line}] Error {where}: {message}");
+            Console.WriteLine($"Line [{line}] Error {where}: {message}");
             hadError = true;
         }
     }
