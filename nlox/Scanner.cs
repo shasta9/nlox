@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lox {
+namespace nlox {
     internal class Scanner {
         private string source;
         private List<Token> tokens = new List<Token>();

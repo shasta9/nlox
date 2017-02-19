@@ -1,4 +1,4 @@
-﻿namespace lox {
+﻿namespace nlox {
     internal class Token {
         private TokenType type;
         private string lexeme;

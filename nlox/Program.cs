@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace lox {
+namespace nlox {
     class Program {
 
         static bool hadError = false;
