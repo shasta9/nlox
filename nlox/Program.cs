@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 
 namespace nlox {
-    class Program {
+    class Nlox {
 
         static bool hadError = false;
 
@@ -34,7 +34,6 @@ namespace nlox {
                 Run(Console.ReadLine());
                 hadError = false;
             }
-
         }
 
         private static void Run(string source) {
@@ -47,11 +46,11 @@ namespace nlox {
             }
         }
 
-        static void Error(int line, string message) {
+        internal static void Error(int line, string message) {
             Report(line, "", message);
         }
 
-        static private void Report(int line, string where, string message) {
+        internal static void Report(int line, string where, string message) {
             Console.WriteLine($"[line [{line}] Error {where}: {message}");
             hadError = true;
         }

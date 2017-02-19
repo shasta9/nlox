@@ -5,7 +5,7 @@
         private object literal;
         private int line;
 
-        Token(TokenType type, string lexeme, object literal, int line) {
+       internal Token(TokenType type, string lexeme, object literal, int line) {
             this.type = type;
             this.lexeme = lexeme;
             this.literal = literal;
@@ -17,5 +17,3 @@
         }
     }
 }
-
-
