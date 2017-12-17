@@ -5,7 +5,7 @@ namespace Nlox {
    internal class Scanner {
       private static readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>
       {
-         { "and",    TokenType.AND },
+         {"and",    TokenType.AND },
          {"class",  TokenType.CLASS },
          {"else",   TokenType.ELSE},
          {"false",  TokenType.FALSE},
@@ -183,5 +183,3 @@ namespace Nlox {
       }
    }
 }
-
-
