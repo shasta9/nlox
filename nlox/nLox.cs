@@ -10,6 +10,7 @@ namespace NLox {
 
       static void Main(string[] args) {
          //TestAstPrinter();
+         //TestRpnPrinter();
          if (args.Length > 1) {
             Console.WriteLine("Usage: nlox [script]");
          }
@@ -57,6 +58,7 @@ namespace NLox {
       }
 
       private static void TestAstPrinter() {
+         // -123 * (45.67) => (* (- 123) (group 45.67))
          Expr expression =
             new Binary(
                new Unary(
@@ -70,6 +72,33 @@ namespace NLox {
             );
 
          var printer = new AstPrinter();
+         expression.Accept(printer);
+         Console.WriteLine(printer.ToString());
+         Console.ReadLine();
+      }
+
+      private static void TestRpnPrinter() {
+         // (1 + 2) * (4 - 3) => 1 2 + 4 3 - *
+         Expr expression =
+            new Binary(
+               new Grouping(
+                  new Binary(
+                     new Literal(1),
+                     new Token(TokenType.PLUS, "+", null, 1),
+                     new Literal(2)
+                  )
+               ),
+               new Token(TokenType.STAR, "*", null, 1),
+               new Grouping(
+                  new Binary(
+                     new Literal(4),
+                     new Token(TokenType.MINUS, "-", null, 1),
+                     new Literal(3)
+                  )
+               )
+            );
+
+         var printer = new RpnPrinter();
          expression.Accept(printer);
          Console.WriteLine(printer.ToString());
          Console.ReadLine();

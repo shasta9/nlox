@@ -61,6 +61,7 @@
     <Compile Include="Expr.cs" />
     <Compile Include="nLox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RpnPrinter.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TokenType.cs" />
