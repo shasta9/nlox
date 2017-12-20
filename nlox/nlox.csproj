@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AstPrinter.cs" />
     <Compile Include="Expr.cs" />
     <Compile Include="nLox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

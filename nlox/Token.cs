@@ -1,4 +1,4 @@
-﻿namespace Nlox {
+﻿namespace NLox {
     internal class Token {
         public TokenType Type { get; }
         public string Lexeme { get; }

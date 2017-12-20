@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Nlox {
+namespace NLox {
    internal class Scanner {
       private static readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>
       {
