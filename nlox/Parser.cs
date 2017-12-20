@@ -4,13 +4,20 @@ using System.Collections.Generic;
 namespace NLox {
    internal class Parser {
 
-      private class ParseError : Exception { }
-
       private readonly List<Token> tokens;
       private int current = 0;
 
       public Parser(List<Token> tokens) {
          this.tokens = tokens;
+      }
+
+      internal Expr Parse() {
+         try {
+            return Expression();
+         }
+         catch (ParseError error) {
+            return null;
+         }
       }
 
       private Expr Expression() {
@@ -78,26 +85,7 @@ namespace NLox {
             Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
             return new Grouping(expr);
          }
-         return null;
-      }
-
-      private Token Consume(TokenType type, string message) {
-         if (Check(type)) return Advance();
-         throw Error(Peek(), message);
-      }
-
-      private ParseError Error(Token token, String message) {
-         nLox.Error(token, message);
-         return new ParseError();
-      }
-
-      private static void Error(Token token, String message) {
-         if (token.type == TokenType.EOF) {
-            report(token.line, " at end", message);
-         }
-         else {
-            report(token.line, " at '" + token.lexeme + "'", message);
-         }
+         throw Error(Peek(), "Expect expression.");
       }
 
       private bool Match(params TokenType[] types) {
@@ -108,6 +96,30 @@ namespace NLox {
             }
          }
          return false;
+      }
+
+      private Token Consume(TokenType type, string message) {
+         if (Check(type)) return Advance();
+         throw Error(Peek(), message);
+      }
+
+      private void Synchronize() {
+         Advance();
+         while (!IsAtEnd()) {
+            if (Previous().Type == TokenType.SEMICOLON) return;
+            switch (Peek().Type) {
+               case TokenType.CLASS:
+               case TokenType.FUN:
+               case TokenType.VAR:
+               case TokenType.FOR:
+               case TokenType.IF:
+               case TokenType.WHILE:
+               case TokenType.PRINT:
+               case TokenType.RETURN:
+                  return;
+            }
+            Advance();
+         }
       }
 
       private bool Check(TokenType tokenType) {
@@ -131,5 +143,13 @@ namespace NLox {
       private Token Previous() {
          return tokens[current - 1];
       }
-   }
+
+      private ParseError Error(Token token, String message) {
+         nLox.Error(token, message);
+         return new ParseError();
+      }
+   } 
+   
+   public class ParseError : Exception { }
+
 }

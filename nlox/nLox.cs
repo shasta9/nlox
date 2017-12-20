@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 
 namespace NLox {
-   class nLox {
+   public class nLox {
 
       static bool hadError = false;
 
@@ -41,11 +41,12 @@ namespace NLox {
       private static void Run(string source) {
          Scanner scanner = new Scanner(source);
          List<Token> tokens = scanner.ScanTokens();
-
-         // For now, just print the tokens.
-         foreach (Token token in tokens) {
-            Console.WriteLine(token);
-         }
+         Parser parser = new Parser(tokens);
+         Expr expression  = parser.Parse();
+         if (hadError) return;
+         var printer = new AstPrinter();
+         expression.Accept(printer);
+         Console.WriteLine(printer.ToString());
       }
 
       internal static void Error(int line, string message) {
@@ -55,6 +56,15 @@ namespace NLox {
       internal static void Report(int line, string where, string message) {
          Console.WriteLine($"Line [{line}] Error {where}: {message}");
          hadError = true;
+      }
+
+      internal static void Error(Token token, String message) {
+         if (token.Type == TokenType.EOF) {
+            Report(token.Line, " at end", message);
+         }
+         else {
+            Report(token.Line, " at '" + token.Lexeme + "'", message);
+         }
       }
 
       private static void TestAstPrinter() {
