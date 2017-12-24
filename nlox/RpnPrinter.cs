@@ -2,7 +2,7 @@
 using System.Text;
 
 namespace NLox {
-   internal class RpnPrinter : IExprVisitor {
+   internal class RpnPrinter : Expr.IExprVisitor {
       StringBuilder sb = new StringBuilder();
 
       public void VisitBinaryExpr(Expr.Binary expr) {

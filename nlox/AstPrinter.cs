@@ -1,7 +1,7 @@
 ﻿using System.Text;
 
 namespace NLox {
-   internal class AstPrinter : IExprVisitor {
+   internal class AstPrinter : Expr.IExprVisitor {
       private readonly StringBuilder sb = new StringBuilder();
 
       public void VisitBinaryExpr(Expr.Binary expr) {
