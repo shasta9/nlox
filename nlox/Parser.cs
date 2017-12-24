@@ -29,7 +29,7 @@ namespace NLox {
          while (Match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
             Token opr = Previous();
             Expr right = Comparison();
-            expr = new Binary(expr, opr, right);
+            expr = new Expr.Binary(expr, opr, right);
          }
          return expr;
       }
@@ -39,7 +39,7 @@ namespace NLox {
          while (Match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
             Token opr = Previous();
             Expr right = Addition();
-            expr = new Binary(expr, opr, right);
+            expr = new Expr.Binary(expr, opr, right);
          }
          return expr;
       }
@@ -49,7 +49,7 @@ namespace NLox {
          while (Match(TokenType.MINUS, TokenType.PLUS)) {
             Token opr = Previous();
             Expr right = Multiplication();
-            expr = new Binary(expr, opr, right);
+            expr = new Expr.Binary(expr, opr, right);
          }
          return expr;
       }
@@ -59,7 +59,7 @@ namespace NLox {
          while (Match(TokenType.SLASH, TokenType.STAR)) {
             Token opr = Previous();
             Expr right = Unary();
-            expr = new Binary(expr, opr, right);
+            expr = new Expr.Binary(expr, opr, right);
          }
          return expr;
       }
@@ -68,22 +68,22 @@ namespace NLox {
          if (Match(TokenType.BANG, TokenType.MINUS)) {
             Token opr = Previous();
             Expr right = Unary();
-            return new Unary(opr, right);
+            return new Expr.Unary(opr, right);
          }
          return Primary();
       }
 
       private Expr Primary() {
-         if (Match(TokenType.FALSE)) return new Literal(false);
-         if (Match(TokenType.TRUE)) return new Literal(true);
-         if (Match(TokenType.NIL)) return new Literal(null);
+         if (Match(TokenType.FALSE)) return new Expr.Literal(false);
+         if (Match(TokenType.TRUE)) return new Expr.Literal(true);
+         if (Match(TokenType.NIL)) return new Expr.Literal(null);
          if (Match(TokenType.NUMBER, TokenType.STRING)) {
-            return new Literal(Previous().Literal);
+            return new Expr.Literal(Previous().Literal);
          }
          if (Match(TokenType.LEFT_PAREN)) {
             Expr expr = Expression();
             Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
-            return new Grouping(expr);
+            return new Expr.Grouping(expr);
          }
          throw Error(Peek(), "Expect expression.");
       }

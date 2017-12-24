@@ -2,9 +2,9 @@
 
 namespace NLox {
    internal class AstPrinter : IExprVisitor {
-      StringBuilder sb = new StringBuilder();
+      private readonly StringBuilder sb = new StringBuilder();
 
-      public void VisitBinaryExpr(Binary expr) {
+      public void VisitBinaryExpr(Expr.Binary expr) {
          sb.Append("(");
          sb.Append($"{expr.Opr.Lexeme}");
          sb.Append(" ");
@@ -14,7 +14,7 @@ namespace NLox {
          sb.Append(")");
       }
 
-      public void VisitGroupingExpr(Grouping expr) {
+      public void VisitGroupingExpr(Expr.Grouping expr) {
          sb.Append("(");
          sb.Append("group");
          sb.Append(" ");
@@ -22,7 +22,7 @@ namespace NLox {
          sb.Append(")");
       }
 
-      public void VisitLiteralExpr(Literal expr) {
+      public void VisitLiteralExpr(Expr.Literal expr) {
          if (expr.Value == null) {
             sb.Append("nil");
             return;
@@ -30,7 +30,7 @@ namespace NLox {
          sb.Append(expr.Value.ToString());
       }
 
-      public void VisitUnaryExpr(Unary expr) {
+      public void VisitUnaryExpr(Expr.Unary expr) {
          sb.Append("(");
          sb.Append($"{expr.Opr.Lexeme} ");
          expr.Right.Accept(this);
