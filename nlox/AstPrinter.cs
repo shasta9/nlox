@@ -1,18 +1,10 @@
 ﻿using System.Text;
 
 namespace NLox {
-   internal class AstPrinter : Expr.IExprVisitor {
+   internal class AstPrinter : Expr.IExprVisitor<string> {
       private readonly StringBuilder sb = new StringBuilder();
 
-      public void VisitBinaryExpr(Expr.Binary expr) {
-         sb.Append("(");
-         sb.Append($"{expr.Opr.Lexeme}");
-         sb.Append(" ");
-         expr.Left.Accept(this);
-         sb.Append(" ");
-         expr.Right.Accept(this);
-         sb.Append(")");
-      }
+
 
       public void VisitGroupingExpr(Expr.Grouping expr) {
          sb.Append("(");
@@ -39,6 +31,24 @@ namespace NLox {
 
       public override string ToString() {
          return sb.ToString();
+      }
+
+      public T VisitBinaryExpr<T>(Expr.Binary expr) {
+         throw new System.NotImplementedException();
+      }
+
+      private string Parenthesise(string name, params Expr[] exprs) {
+         var builder = new StringBuilder();
+
+         builder.Append("(").Append(name);
+         foreach (var expr in exprs) {
+            builder.Append(" ");
+            builder.Append(expr.Accept<string>(this));
+         }
+         builder.Append(")");
+
+         return builder.ToString();
+
       }
    }
 }

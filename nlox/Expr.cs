@@ -3,14 +3,14 @@ namespace NLox {
 
    internal abstract class Expr {
 
-      public interface IExprVisitor {
+      public interface IExprVisitor<T> {
          T VisitBinaryExpr<T>(Binary expr);
          T VisitGroupingExpr<T>(Grouping expr);
          T VisitLiteralExpr<T>(Literal expr);
          T VisitUnaryExpr<T>(Unary expr);
       }
 
-      public abstract T Accept<T>(IExprVisitor visitor);
+      public abstract T Accept<T>(IExprVisitor<T> visitor);
 
       public class Binary : Expr {
          public Expr Left { get; }
@@ -22,7 +22,7 @@ namespace NLox {
             Right = right;
          }
 
-         public override T Accept<T>(IExprVisitor visitor) {
+         public override T Accept<T>(IExprVisitor<T> visitor) {
             return visitor.VisitBinaryExpr<T>(this);
          }
       }
@@ -33,7 +33,7 @@ namespace NLox {
             Expression = expression;
          }
 
-         public override T Accept<T>(IExprVisitor visitor) {
+         public override T Accept<T>(IExprVisitor<T> visitor) {
             return visitor.VisitGroupingExpr<T>(this);
          }
       }
@@ -44,7 +44,7 @@ namespace NLox {
             Value = value;
          }
 
-         public override T Accept<T>(IExprVisitor visitor) {
+         public override T Accept<T>(IExprVisitor<T> visitor) {
             return visitor.VisitLiteralExpr<T>(this);
          }
       }
@@ -58,7 +58,7 @@ namespace NLox {
             Right = right;
          }
 
-         public override T Accept<T>(IExprVisitor visitor) {
+         public override T Accept<T>(IExprVisitor<T> visitor) {
             return visitor.VisitUnaryExpr<T>(this);
          }
       }
