@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using static NLox.TokenType;
 
 namespace NLox {
-   internal class Interpreter : Expr.IExprVisitor<object> {
+   internal class Interpreter : Expr.IExprVisitor<object>, Stmt.IStmtVisitor<Nothing> {
 
-      public void Interpret(Expr expression) {
+      public void Interpret(List<Stmt> statements) {
          try {
-            object value = Evaluate(expression);
-            Console.WriteLine(Stringify(value));
+            foreach (var statement in statements) {
+               Execute(statement);
+            }
          }
          catch (RuntimeError error) {
             nLox.RuntimeError(error);
@@ -61,16 +63,6 @@ namespace NLox {
          return null;
       }
 
-      private void CheckNumberOperand(Token opr, object operand) {
-         if (operand is double) return;
-         throw new RuntimeError(opr, "Operand must be a number.");
-      }
-
-      private void CheckNumberOperands(Token opr, object left, object right) {
-         if (left is double && right is double) return;
-         throw new RuntimeError(opr, "Operands must be numbers.");
-      }
-
       public object VisitGroupingExpr(Expr.Grouping expr) {
          return Evaluate(expr.Expression);
       }
@@ -92,8 +84,34 @@ namespace NLox {
          return null;
       }
 
+      private void CheckNumberOperand(Token opr, object operand) {
+         if (operand is double) return;
+         throw new RuntimeError(opr, "Operand must be a number.");
+      }
+
+
+      private void CheckNumberOperands(Token opr, object left, object right) {
+         if (left is double && right is double) return;
+         throw new RuntimeError(opr, "Operands must be numbers.");
+      }
+
       private object Evaluate(Expr expr) {
          return expr.Accept(this);
+      }
+
+      private void Execute(Stmt stmt) {
+         stmt.Accept(this);
+      }
+
+      public Nothing VisitExpressionStmt(Stmt.Expression stmt) {
+         Evaluate(stmt.Xpression);
+         return Nothing.AtAll;
+      }
+
+      public Nothing VisitPrintStmt(Stmt.Print stmt) {
+         object value = Evaluate(stmt.Xpression);
+         Console.WriteLine(Stringify(value));
+         return Nothing.AtAll;
       }
 
       private bool IsTruthy(object obj) {
@@ -101,6 +119,7 @@ namespace NLox {
          if (obj is bool b) return b;
          return true;
       }
+
 
       private bool IsEqual(object a, object b) {
          // nil is only equal to nil

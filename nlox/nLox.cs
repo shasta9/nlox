@@ -43,9 +43,10 @@ namespace NLox {
          Scanner scanner = new Scanner(source);
          List<Token> tokens = scanner.ScanTokens();
          Parser parser = new Parser(tokens);
-         Expr expression = parser.Parse();
+         List<Stmt>statements = parser.Parse();
+         // stop if there was a syntax error
          if (hadError) return;
-         interpreter.Interpret(expression);
+         interpreter.Interpret(statements);
       }
 
       public static void Error(int line, string message) {

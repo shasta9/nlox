@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using static NLox.TokenType;
 
 namespace NLox {
    internal class Parser {
@@ -25,13 +26,25 @@ namespace NLox {
       }
 
       private Stmt Statement() {
-         if (Match(TokenType.PRINT)) return PrintStatement();
+         if (Match(PRINT)) return PrintStatement();
          return ExpressionStatement();
+      }
+
+      private Stmt PrintStatement() {
+         Expr value = Expression();
+         Consume(SEMICOLON, "Expect ';' after value.");
+         return new Stmt.Print(value);
+      }
+
+      private Stmt ExpressionStatement() {
+         Expr value = Expression();
+         Consume(SEMICOLON, "Expect ';' after expression.");
+         return new Stmt.Expression(value);
       }
 
       private Expr Equality() {
          Expr expr = Comparison();
-         while (Match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
+         while (Match(BANG_EQUAL, EQUAL_EQUAL)) {
             Token opr = Previous();
             Expr right = Comparison();
             expr = new Expr.Binary(expr, opr, right);
@@ -41,7 +54,7 @@ namespace NLox {
 
       private Expr Comparison() {
          Expr expr = Addition();
-         while (Match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
+         while (Match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
             Token opr = Previous();
             Expr right = Addition();
             expr = new Expr.Binary(expr, opr, right);
@@ -51,7 +64,7 @@ namespace NLox {
 
       private Expr Addition() {
          Expr expr = Multiplication();
-         while (Match(TokenType.MINUS, TokenType.PLUS)) {
+         while (Match(MINUS, PLUS)) {
             Token opr = Previous();
             Expr right = Multiplication();
             expr = new Expr.Binary(expr, opr, right);
@@ -61,7 +74,7 @@ namespace NLox {
 
       private Expr Multiplication() {
          Expr expr = Unary();
-         while (Match(TokenType.SLASH, TokenType.STAR)) {
+         while (Match(SLASH, STAR)) {
             Token opr = Previous();
             Expr right = Unary();
             expr = new Expr.Binary(expr, opr, right);
@@ -70,7 +83,7 @@ namespace NLox {
       }
 
       private Expr Unary() {
-         if (Match(TokenType.BANG, TokenType.MINUS)) {
+         if (Match(BANG, MINUS)) {
             Token opr = Previous();
             Expr right = Unary();
             return new Expr.Unary(opr, right);
@@ -79,15 +92,15 @@ namespace NLox {
       }
 
       private Expr Primary() {
-         if (Match(TokenType.FALSE)) return new Expr.Literal(false);
-         if (Match(TokenType.TRUE)) return new Expr.Literal(true);
-         if (Match(TokenType.NIL)) return new Expr.Literal(null);
-         if (Match(TokenType.NUMBER, TokenType.STRING)) {
+         if (Match(FALSE)) return new Expr.Literal(false);
+         if (Match(TRUE)) return new Expr.Literal(true);
+         if (Match(NIL)) return new Expr.Literal(null);
+         if (Match(NUMBER, STRING)) {
             return new Expr.Literal(Previous().Literal);
          }
-         if (Match(TokenType.LEFT_PAREN)) {
+         if (Match(LEFT_PAREN)) {
             Expr expr = Expression();
-            Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+            Consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
          }
          throw Error(Peek(), "Expect expression.");
@@ -111,16 +124,16 @@ namespace NLox {
       private void Synchronize() {
          Advance();
          while (!IsAtEnd()) {
-            if (Previous().Type == TokenType.SEMICOLON) return;
+            if (Previous().Type == SEMICOLON) return;
             switch (Peek().Type) {
-               case TokenType.CLASS:
-               case TokenType.FUN:
-               case TokenType.VAR:
-               case TokenType.FOR:
-               case TokenType.IF:
-               case TokenType.WHILE:
-               case TokenType.PRINT:
-               case TokenType.RETURN:
+               case CLASS:
+               case FUN:
+               case VAR:
+               case FOR:
+               case IF:
+               case WHILE:
+               case PRINT:
+               case RETURN:
                   return;
             }
             Advance();
@@ -138,7 +151,7 @@ namespace NLox {
       }
 
       private bool IsAtEnd() {
-         return Peek().Type == TokenType.EOF;
+         return Peek().Type == EOF;
       }
 
       private Token Peek() {
