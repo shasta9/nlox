@@ -4,7 +4,7 @@ namespace GenerateAst {
    class Program {
       static void Main(string[] args) {
          DefineAst(
-            "d:\\dev\\software\\nlox\\nlox\\",
+            @"C:\Users\shast\OneDrive\Documents\Visual Studio 2017\Projects\nlox\nlox\",
             "Expr",
             new[] { "Binary   : Expr left, Token opr, Expr right",
                     "Grouping : Expr expression",
@@ -14,61 +14,66 @@ namespace GenerateAst {
 
       private static void DefineAst(string path, string baseName, string[] types) {
          using (StreamWriter writer = new StreamWriter($"{path}{baseName}.cs")) {
-            writer.WriteLine("namespace NLox {");
-            DefineVisitorInterface(writer, baseName, types);
-            DefineAbstractClass(writer, baseName, types);
-            foreach (var type in types) {
-               var className = type.Split(':')[0].Trim();
-               var fields = type.Split(':')[1].Trim();
-               DefineSubclass(writer, baseName, className, fields);
-            }
+            NameSpace(writer);
+            AbstractClass(writer, baseName, types);
             writer.WriteLine($"}}");
          }
       }
 
-      private static void DefineVisitorInterface(StreamWriter writer, string baseName, string[] types) {
-         writer.WriteLine();
-         writer.WriteLine($"   internal interface I{baseName}Visitor {{");
-         foreach (var type in types) {
-            var className = type.Split(':')[0].Trim();
-            writer.WriteLine($"      void Visit{className}{baseName}({className} {baseName.ToLower()});");
-         }
-         writer.WriteLine($"   }}");
+      private static void NameSpace(StreamWriter writer) {
+         writer.WriteLine("namespace NLox {");
       }
 
-      private static void DefineAbstractClass(StreamWriter writer, string baseName, string[] types) {
+      private static void AbstractClass(StreamWriter writer, string baseName, string[] types) {
          writer.WriteLine();
          writer.WriteLine($"   internal abstract class {baseName} {{");
-         writer.WriteLine($"      public abstract void Accept(I{baseName}Visitor visitor);");
-         writer.WriteLine($"   }}");
+         VisitorInterface(writer, baseName, types);
+         writer.WriteLine();
+         writer.WriteLine($"      public abstract T Accept<T>(I{baseName}Visitor<T> visitor);");
+         foreach (var type in types) {
+            var className = type.Split(':')[0].Trim();
+            var fields = type.Split(':')[1].Trim();
+            DefineSubclass(writer, baseName, className, fields);
+         }
+         writer.WriteLine("   }");
+      }
+
+      private static void VisitorInterface(StreamWriter writer, string baseName, string[] types) {
+         writer.WriteLine();
+         writer.WriteLine($"      public interface I{baseName}Visitor<T> {{");
+         foreach (var type in types) {
+            var className = type.Split(':')[0].Trim();
+            writer.WriteLine($"         T Visit{className}{baseName}({className} {baseName.ToLower()});");
+         }
+         writer.WriteLine("      }");
       }
 
       private static void DefineSubclass(StreamWriter writer, string baseName, string className, string fieldList) {
          writer.WriteLine();
-         writer.WriteLine($"   internal class {className} : {baseName} {{");
+         writer.WriteLine($"      public class {className} : {baseName} {{");
          // properties
          var fields = fieldList.Split(',');
          foreach (var field in fields) {
             var trimmed = field.Trim();
             var type = trimmed.Split(' ')[0].Trim();
             var name = trimmed.Split(' ')[1].Trim();
-            writer.WriteLine($"      public {type} {Capitalise(name)} {{ get; }}");
+            writer.WriteLine($"         public {type} {Capitalise(name)} {{ get; }}");
          }
          // ctor
-         writer.WriteLine($"      public {className} ({fieldList}) {{");
+         writer.WriteLine($"         public {className} ({fieldList}) {{");
          // store parameters in fields
          foreach (var field in fields) {
             var trimmed = field.Trim();
             var name = trimmed.Split(' ')[1];
-            writer.WriteLine($"         {Capitalise(name)} = {name};");
+            writer.WriteLine($"            {Capitalise(name)} = {name};");
          }
-         writer.WriteLine($"      }}");
+         writer.WriteLine("         }");
          // visitor interface
          writer.WriteLine();
-         writer.WriteLine($"      public override void Accept(I{baseName}Visitor visitor) {{");
-         writer.WriteLine($"         visitor.Visit{className}{baseName}(this);");
-         writer.WriteLine($"      }}");
-         writer.WriteLine($"   }}");
+         writer.WriteLine($"         public override T Accept<T>(I{baseName}Visitor<T> visitor) {{");
+         writer.WriteLine($"            return visitor.Visit{className}{baseName}(this);");
+         writer.WriteLine("         }");
+         writer.WriteLine("      }");
       }
 
       private static string Capitalise(string source) {

@@ -2,34 +2,36 @@
 using System.Text;
 
 namespace NLox {
-   internal class RpnPrinter : Expr.IExprVisitor {
-      StringBuilder sb = new StringBuilder();
+   internal class RpnPrinter : Expr.IExprVisitor<string> {
 
-      public void VisitBinaryExpr(Expr.Binary expr) {
-         expr.Left.Accept(this);
+      public string VisitBinaryExpr(Expr.Binary expr) {
+         var sb = new StringBuilder();
+         sb.Append(expr.Left.Accept(this));
          sb.Append(" ");
-         expr.Right.Accept(this);
+         sb.Append(expr.Right.Accept(this));
          sb.Append(" ");
          sb.Append($"{expr.Opr.Lexeme}");
+         return sb.ToString();
       }
 
-      public void VisitGroupingExpr(Expr.Grouping expr) {
-         expr.Expression.Accept(this);
+      public string VisitGroupingExpr(Expr.Grouping expr) {
+         return expr.Expression.Accept(this);
       }
 
-      public void VisitLiteralExpr(Expr.Literal expr) {
+      public string VisitLiteralExpr(Expr.Literal expr) {
+         var sb = new StringBuilder();
          if (expr.Value == null) {
             sb.Append("nil");
-            return;
+            return sb.ToString();
          }
          sb.Append(expr.Value.ToString());
+         return sb.ToString();
       }
 
-      public void VisitUnaryExpr(Expr.Unary expr) {
-         throw new NotImplementedException();
-      }
-
-      public override string ToString() {
+      public string VisitUnaryExpr(Expr.Unary expr) {
+         var sb = new StringBuilder();
+         sb.Append(expr.Accept(this));
+         sb.Append(" !");
          return sb.ToString();
       }
    }

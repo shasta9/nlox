@@ -10,7 +10,7 @@ namespace NLox {
 
       static void Main(string[] args) {
          //TestAstPrinter();
-         //TestRpnPrinter();
+         TestRpnPrinter();
          if (args.Length > 1) {
             Console.WriteLine("Usage: nlox [script]");
          }
@@ -45,8 +45,7 @@ namespace NLox {
          Expr expression  = parser.Parse();
          if (hadError) return;
          var printer = new AstPrinter();
-         expression.Accept(printer);
-         Console.WriteLine(printer.ToString());
+         Console.WriteLine(expression.Accept(printer));
       }
 
       internal static void Error(int line, string message) {
@@ -82,8 +81,7 @@ namespace NLox {
             );
 
          var printer = new AstPrinter();
-         expression.Accept(printer);
-         Console.WriteLine(printer.ToString());
+         Console.WriteLine(expression.Accept(printer));
          Console.ReadLine();
       }
 
@@ -109,8 +107,7 @@ namespace NLox {
             );
 
          var printer = new RpnPrinter();
-         expression.Accept(printer);
-         Console.WriteLine(printer.ToString());
+         Console.WriteLine(expression.Accept(printer));
          Console.ReadLine();
       }
    }
