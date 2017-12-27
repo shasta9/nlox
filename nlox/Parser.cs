@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 
 namespace NLox {
@@ -11,17 +12,21 @@ namespace NLox {
          this.tokens = tokens;
       }
 
-      internal Expr Parse() {
-         try {
-            return Expression();
+      internal List<Stmt> Parse() {
+         var statements = new List<Stmt>();
+         while (!IsAtEnd()) {
+            statements.Add(Statement());
          }
-         catch (ParseError error) {
-            return null;
-         }
+         return statements;
       }
 
       private Expr Expression() {
          return Equality();
+      }
+
+      private Stmt Statement() {
+         if (Match(TokenType.PRINT)) return PrintStatement();
+         return ExpressionStatement();
       }
 
       private Expr Equality() {
@@ -148,8 +153,8 @@ namespace NLox {
          nLox.Error(token, message);
          return new ParseError();
       }
-   } 
-   
+   }
+
    public class ParseError : Exception { }
 
 }

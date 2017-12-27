@@ -3,13 +3,19 @@
 namespace GenerateAst {
    class Program {
       static void Main(string[] args) {
+         var outputPath = @"C:\Users\shast\OneDrive\Documents\Visual Studio 2017\Projects\nlox\nlox\";
          DefineAst(
-            @"C:\Users\shast\OneDrive\Documents\Visual Studio 2017\Projects\nlox\nlox\",
+            outputPath,
             "Expr",
             new[] { "Binary   : Expr left, Token opr, Expr right",
                     "Grouping : Expr expression",
                     "Literal  : object value",
                     "Unary    : Token opr, Expr right" });
+         DefineAst(
+            outputPath,
+            "Stmt",
+            new[] { "Expression : Expr xpression",
+                    "Print      : Expr xpression" });
       }
 
       private static void DefineAst(string path, string baseName, string[] types) {
