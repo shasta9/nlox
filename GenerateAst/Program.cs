@@ -10,12 +10,14 @@ namespace GenerateAst {
             new[] { "Binary   : Expr left, Token opr, Expr right",
                     "Grouping : Expr expression",
                     "Literal  : object value",
-                    "Unary    : Token opr, Expr right" });
+                    "Unary    : Token opr, Expr right",
+                    "Variable : Token name" });
          DefineAst(
             outputPath,
             "Stmt",
             new[] { "Expression : Expr xpression",
-                    "Print      : Expr xpression" });
+                    "Print      : Expr xpression",
+                    "Var        : Token name, Expr initializer" });
       }
 
       private static void DefineAst(string path, string baseName, string[] types) {

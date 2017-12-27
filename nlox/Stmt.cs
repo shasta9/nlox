@@ -5,6 +5,7 @@ namespace NLox {
       public interface IStmtVisitor<T> {
          T VisitExpressionStmt(Expression stmt);
          T VisitPrintStmt(Print stmt);
+         T VisitVarStmt(Var stmt);
       }
 
       public abstract T Accept<T>(IStmtVisitor<T> visitor);
@@ -28,6 +29,19 @@ namespace NLox {
 
          public override T Accept<T>(IStmtVisitor<T> visitor) {
             return visitor.VisitPrintStmt(this);
+         }
+      }
+
+      public class Var : Stmt {
+         public Token Name { get; }
+         public Expr Initializer { get; }
+         public Var (Token name, Expr initializer) {
+            Name = name;
+            Initializer = initializer;
+         }
+
+         public override T Accept<T>(IStmtVisitor<T> visitor) {
+            return visitor.VisitVarStmt(this);
          }
       }
    }
