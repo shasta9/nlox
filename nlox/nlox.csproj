@@ -66,6 +66,7 @@
     <Compile Include="RpnPrinter.cs" />
     <Compile Include="RuntimeError.cs" />
     <Compile Include="Scanner.cs" />
+    <Compile Include="Stmt.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TokenType.cs" />
   </ItemGroup>
