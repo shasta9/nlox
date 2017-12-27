@@ -4,13 +4,13 @@ using System.IO;
 using System.Text;
 
 namespace NLox {
-   public class nLox {
+   internal class nLox {
 
-      static bool hadError = false;
+      private static readonly Interpreter interpreter = new Interpreter();
+      private static bool hadError = false;
+      private static bool hadRuntimeError = false;
 
-      static void Main(string[] args) {
-         //TestAstPrinter();
-         TestRpnPrinter();
+      private static void Main(string[] args) {
          if (args.Length > 1) {
             Console.WriteLine("Usage: nlox [script]");
          }
@@ -27,11 +27,12 @@ namespace NLox {
          string source = Encoding.Default.GetString(bytes);
          Run(source);
          // Indicate an error in the exit code.
-         // if (hadError) System.exit(65);
+         if (hadError) Environment.Exit(65);
+         if (hadRuntimeError) Environment.Exit(70);
       }
 
       private static void RunPrompt() {
-         for (; ; ) {
+         for (;;) {
             Console.Write("> ");
             Run(Console.ReadLine());
             hadError = false;
@@ -42,28 +43,32 @@ namespace NLox {
          Scanner scanner = new Scanner(source);
          List<Token> tokens = scanner.ScanTokens();
          Parser parser = new Parser(tokens);
-         Expr expression  = parser.Parse();
+         Expr expression = parser.Parse();
          if (hadError) return;
-         var printer = new AstPrinter();
-         Console.WriteLine(expression.Accept(printer));
+         interpreter.Interpret(expression);
       }
 
-      internal static void Error(int line, string message) {
+      public static void Error(int line, string message) {
          Report(line, "", message);
       }
 
-      internal static void Report(int line, string where, string message) {
-         Console.WriteLine($"Line [{line}] Error {where}: {message}");
-         hadError = true;
-      }
-
-      internal static void Error(Token token, String message) {
+      public static void Error(Token token, String message) {
          if (token.Type == TokenType.EOF) {
             Report(token.Line, " at end", message);
          }
          else {
             Report(token.Line, " at '" + token.Lexeme + "'", message);
          }
+      }
+
+      public static void RuntimeError(RuntimeError error) {
+         Console.WriteLine(error.Message + $"\n[line {error.Token.Line}]");
+         hadRuntimeError = true;
+      }
+
+      public static void Report(int line, string where, string message) {
+         Console.WriteLine($"Line [{line}] Error {where}: {message}");
+         hadError = true;
       }
 
       private static void TestAstPrinter() {

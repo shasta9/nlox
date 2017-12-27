@@ -4,6 +4,10 @@ namespace NLox {
    internal class AstPrinter : Expr.IExprVisitor<string> {
       private readonly StringBuilder sb = new StringBuilder();
 
+      public string Print(Expr expr) {
+         return expr.Accept(this);
+      }
+
       public string VisitBinaryExpr(Expr.Binary expr) {
          return Parenthesise(expr.Opr.Lexeme, expr.Left, expr.Right);
       }
