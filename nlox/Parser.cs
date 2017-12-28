@@ -16,13 +16,24 @@ namespace NLox {
       internal List<Stmt> Parse() {
          var statements = new List<Stmt>();
          while (!IsAtEnd()) {
-            statements.Add(Statement());
+            statements.Add(Declaration());
          }
          return statements;
       }
 
       private Expr Expression() {
          return Equality();
+      }
+
+      private Stmt Declaration() {
+         try {
+            if (Match(VAR)) return VarDeclaration();
+            return Statement();
+         }
+         catch (ParseError error) {
+            Synchronize();
+            return null;
+         }
       }
 
       private Stmt Statement() {
@@ -34,6 +45,16 @@ namespace NLox {
          Expr value = Expression();
          Consume(SEMICOLON, "Expect ';' after value.");
          return new Stmt.Print(value);
+      }
+
+      private Stmt VarDeclaration() {
+         Token name = Consume(IDENTIFIER, "Expect variable name.");
+         Expr initializer = null;
+         if (Match(EQUAL)) {
+            initializer = Expression();
+         }
+         Consume(SEMICOLON, "Expect ';' after variable declaration.");
+         return new Stmt.Var(name, initializer);
       }
 
       private Stmt ExpressionStatement() {
@@ -97,6 +118,9 @@ namespace NLox {
          if (Match(NIL)) return new Expr.Literal(null);
          if (Match(NUMBER, STRING)) {
             return new Expr.Literal(Previous().Literal);
+         }
+         if (Match(IDENTIFIER)) {
+            return new Expr.Variable(Previous());
          }
          if (Match(LEFT_PAREN)) {
             Expr expr = Expression();
