@@ -3,6 +3,9 @@ using System.Text;
 
 namespace NLox {
    internal class RpnPrinter : Expr.IExprVisitor<string> {
+      public string VisitAssignExpr(Expr.Assign expr) {
+         throw new NotImplementedException();
+      }
 
       public string VisitBinaryExpr(Expr.Binary expr) {
          var sb = new StringBuilder();
@@ -24,7 +27,7 @@ namespace NLox {
             sb.Append("nil");
             return sb.ToString();
          }
-         sb.Append(expr.Value.ToString());
+         sb.Append(expr.Value);
          return sb.ToString();
       }
 
@@ -33,6 +36,10 @@ namespace NLox {
          sb.Append(expr.Accept(this));
          sb.Append(" !");
          return sb.ToString();
+      }
+
+      public string VisitVariableExpr(Expr.Variable expr) {
+         throw new NotImplementedException();
       }
    }
 }

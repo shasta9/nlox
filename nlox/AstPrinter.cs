@@ -8,6 +8,10 @@ namespace NLox {
          return expr.Accept(this);
       }
 
+      public string VisitAssignExpr(Expr.Assign expr) {
+         throw new System.NotImplementedException();
+      }
+
       public string VisitBinaryExpr(Expr.Binary expr) {
          return Parenthesise(expr.Opr.Lexeme, expr.Left, expr.Right);
       }
@@ -23,6 +27,10 @@ namespace NLox {
 
       public string VisitUnaryExpr(Expr.Unary expr) {
          return Parenthesise(expr.Opr.Lexeme, expr.Right);
+      }
+
+      public string VisitVariableExpr(Expr.Variable expr) {
+         throw new System.NotImplementedException();
       }
 
       private string Parenthesise(string name, params Expr[] exprs) {

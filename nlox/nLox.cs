@@ -27,8 +27,8 @@ namespace NLox {
          string source = Encoding.Default.GetString(bytes);
          Run(source);
          // Indicate an error in the exit code.
-         if (hadError) Environment.Exit(65);
-         if (hadRuntimeError) Environment.Exit(70);
+         if (hadError) System.Environment.Exit(65);
+         if (hadRuntimeError) System.Environment.Exit(70);
       }
 
       private static void RunPrompt() {

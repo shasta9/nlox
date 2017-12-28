@@ -1,6 +1,6 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using static NLox.TokenType;
 
 namespace NLox {
@@ -22,7 +22,7 @@ namespace NLox {
       }
 
       private Expr Expression() {
-         return Equality();
+         return Assignment();
       }
 
       private Stmt Declaration() {
@@ -38,6 +38,7 @@ namespace NLox {
 
       private Stmt Statement() {
          if (Match(PRINT)) return PrintStatement();
+         if(Match(LEFT_BRACE))return new Stmt.Block(Block());
          return ExpressionStatement();
       }
 
@@ -61,6 +62,33 @@ namespace NLox {
          Expr value = Expression();
          Consume(SEMICOLON, "Expect ';' after expression.");
          return new Stmt.Expression(value);
+      }
+
+      private List<Stmt> Block() {
+         List<Stmt> statements =new List<Stmt>();
+         while (!Check(RIGHT_BRACE) && !IsAtEnd()) {
+            statements.Add(Declaration());
+         }
+         Consume(RIGHT_BRACE, "Expect '}' after block.");
+         return statements;
+      }
+
+      private Expr Assignment() {
+         Expr expr = Equality();
+
+         if (Match(EQUAL)) {
+            Token equals = Previous();
+            Expr value = Assignment();
+
+            if (expr is Expr.Variable v) {
+               Token name = v.Name;
+               return new Expr.Assign(name, value);
+            }
+
+            Error(equals, "Invalid assignment target.");
+         }
+
+         return expr;
       }
 
       private Expr Equality() {

@@ -3,6 +3,7 @@ namespace NLox {
    internal abstract class Expr {
 
       public interface IExprVisitor<T> {
+         T VisitAssignExpr(Assign expr);
          T VisitBinaryExpr(Binary expr);
          T VisitGroupingExpr(Grouping expr);
          T VisitLiteralExpr(Literal expr);
@@ -11,6 +12,19 @@ namespace NLox {
       }
 
       public abstract T Accept<T>(IExprVisitor<T> visitor);
+
+      public class Assign : Expr {
+         public Token Name { get; }
+         public Expr Value { get; }
+         public Assign (Token name, Expr value) {
+            Name = name;
+            Value = value;
+         }
+
+         public override T Accept<T>(IExprVisitor<T> visitor) {
+            return visitor.VisitAssignExpr(this);
+         }
+      }
 
       public class Binary : Expr {
          public Expr Left { get; }

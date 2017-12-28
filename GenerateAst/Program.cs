@@ -7,7 +7,8 @@ namespace GenerateAst {
          DefineAst(
             outputPath,
             "Expr",
-            new[] { "Binary   : Expr left, Token opr, Expr right",
+            new[] { "Assign   : Token name, Expr value",
+                    "Binary   : Expr left, Token opr, Expr right",
                     "Grouping : Expr expression",
                     "Literal  : object value",
                     "Unary    : Token opr, Expr right",
@@ -15,7 +16,8 @@ namespace GenerateAst {
          DefineAst(
             outputPath,
             "Stmt",
-            new[] { "Expression : Expr xpression",
+            new[] { "Block      : List<Stmt> statements",
+                    "Expression : Expr xpression",
                     "Print      : Expr xpression",
                     "Var        : Token name, Expr initializer" });
       }

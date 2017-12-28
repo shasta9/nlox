@@ -5,6 +5,8 @@ using static NLox.TokenType;
 namespace NLox {
    internal class Interpreter : Expr.IExprVisitor<object>, Stmt.IStmtVisitor<Nothing> {
 
+      private Environment environment = new Environment();
+
       public void Interpret(List<Stmt> statements) {
          try {
             foreach (var statement in statements) {
@@ -19,6 +21,12 @@ namespace NLox {
       private string Stringify(object obj) {
          if (obj == null) return "nil";
          return obj.ToString();
+      }
+
+      public object VisitAssignExpr(Expr.Assign expr) {
+         object value = Evaluate(expr.Value);
+         environment.Assign(expr.Name, value);
+         return value;
       }
 
       public object VisitBinaryExpr(Expr.Binary expr) {
@@ -84,6 +92,10 @@ namespace NLox {
          return null;
       }
 
+      public object VisitVariableExpr(Expr.Variable expr) {
+         return environment.Get(expr.Name);
+      }
+
       private void CheckNumberOperand(Token opr, object operand) {
          if (operand is double) return;
          throw new RuntimeError(opr, "Operand must be a number.");
@@ -103,6 +115,24 @@ namespace NLox {
          stmt.Accept(this);
       }
 
+      public Nothing VisitBlockStmt(Stmt.Block stmt) {
+         ExecuteBlock(stmt.Statements, new Environment(environment));
+         return Nothing.AtAll;
+      }
+
+      private void ExecuteBlock(List<Stmt> statements, Environment blockEnvironment) {
+         Environment previous = environment;
+         try {
+            environment = blockEnvironment;
+            foreach (var statement in statements) {
+               Execute(statement);
+            }
+         }
+         finally {
+            environment = previous;
+         }
+      }
+
       public Nothing VisitExpressionStmt(Stmt.Expression stmt) {
          Evaluate(stmt.Xpression);
          return Nothing.AtAll;
@@ -111,6 +141,15 @@ namespace NLox {
       public Nothing VisitPrintStmt(Stmt.Print stmt) {
          object value = Evaluate(stmt.Xpression);
          Console.WriteLine(Stringify(value));
+         return Nothing.AtAll;
+      }
+
+      public Nothing VisitVarStmt(Stmt.Var stmt) {
+         object value = null;
+         if (stmt.Initializer != null) {
+            value = Evaluate(stmt.Initializer);
+         }
+         environment.Define(stmt.Name.Lexeme, value);
          return Nothing.AtAll;
       }
 
