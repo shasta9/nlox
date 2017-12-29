@@ -5,7 +5,14 @@ using static NLox.TokenType;
 namespace NLox {
    internal class Interpreter : Expr.IExprVisitor<object>, Stmt.IStmtVisitor<Nothing> {
 
-      private Environment environment = new Environment();
+      private readonly Environment globals;
+      private Environment environment;
+
+      public Interpreter() {
+         globals = new Environment();
+         environment = globals;
+         globals.Define("clock", new Clock());
+      }
 
       public void Interpret(List<Stmt> statements) {
          try {
@@ -72,7 +79,19 @@ namespace NLox {
       }
 
       public object VisitCallExpr(Expr.Call expr) {
-         throw new NotImplementedException();
+         object callee = Evaluate(expr.Callee);
+         List<object> arguments = new List<object>();
+         foreach (var argument in expr.Arguments) {
+            arguments.Add(Evaluate(argument));
+         }
+         if (!(callee is ICallable)) {
+            throw new RuntimeError(expr.Paren, "Can only call functions and classes.");
+         }
+         ICallable function = (ICallable)callee;
+         if (arguments.Count != function.Arity) {
+            throw new RuntimeError(expr.Paren, $"Expected {function.Arity} arguments but got {arguments.Count}.");
+         }
+         return function.Call(this, arguments);
       }
 
       public object VisitGroupingExpr(Expr.Grouping expr) {

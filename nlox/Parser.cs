@@ -24,6 +24,7 @@ namespace NLox {
 
       private Stmt Declaration() {
          try {
+            if (Match(FUN)) return Function("function");
             if (Match(VAR)) return VarDeclaration();
             return Statement();
          }
@@ -120,6 +121,24 @@ namespace NLox {
          Expr value = Expression();
          Consume(SEMICOLON, "Expect ';' after expression.");
          return new Stmt.Expression(value);
+      }
+
+      private Stmt.Function Function(string kind) {
+         Token name = Consume(IDENTIFIER, $"Expect {kind} name.");
+         Consume(LEFT_PAREN, $"Expect '(' after {kind} name.");
+         List<Token> parameters = new List<Token>();
+         if (!Check(RIGHT_PAREN)) {
+            do {
+               if (parameters.Count >= 8) {
+                  Error(Peek(), "Cannot have more than 8 parameters.");
+               }
+               parameters.Add(Consume(IDENTIFIER, "Expect parameter name."));
+            } while (Match(COMMA));
+         }
+         Consume(RIGHT_PAREN, "Expect ')' after parameters.");
+         Consume(LEFT_BRACE, $"Expect '{{' before {kind} body.");
+         List<Stmt> body = Block();
+         return new Stmt.Function(name, parameters, body);
       }
 
       private List<Stmt> Block() {
@@ -219,7 +238,34 @@ namespace NLox {
             Expr right = Unary();
             return new Expr.Unary(opr, right);
          }
-         return Primary();
+         return Call();
+      }
+
+      private Expr Call() {
+         Expr expr = Primary();
+         while (true) {
+            if (Match(LEFT_PAREN)) {
+               expr = FinishCall(expr);
+            }
+            else {
+               break;
+            }
+         }
+         return expr;
+      }
+
+      private Expr FinishCall(Expr callee) {
+         List<Expr> arguments = new List<Expr>();
+         if (!Check(RIGHT_PAREN)) {
+            do {
+               if (arguments.Count >= 8) {
+                  Error(Peek(), "Cannot have more than 8 arguments.");
+               }
+               arguments.Add(Expression());
+            } while (Match(COMMA));
+         }
+         Token paren = Consume(RIGHT_PAREN, "Expect ')' after function arguments.");
+         return new Expr.Call(callee, paren, arguments);
       }
 
       private Expr Primary() {

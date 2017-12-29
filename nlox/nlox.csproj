@@ -58,8 +58,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AstPrinter.cs" />
+    <Compile Include="Clock.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Expr.cs" />
+    <Compile Include="ICallable.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="nLox.cs" />
     <Compile Include="Nothing.cs" />

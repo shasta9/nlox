@@ -7,6 +7,7 @@ namespace NLox {
       public interface IStmtVisitor<T> {
          T VisitBlockStmt(Block stmt);
          T VisitExpressionStmt(Expression stmt);
+         T VisitFunctionStmt(Function stmt);
          T VisitIfStmt(If stmt);
          T VisitPrintStmt(Print stmt);
          T VisitVarStmt(Var stmt);
@@ -34,6 +35,21 @@ namespace NLox {
 
          public override T Accept<T>(IStmtVisitor<T> visitor) {
             return visitor.VisitExpressionStmt(this);
+         }
+      }
+
+      public class Function : Stmt {
+         public Token Name { get; }
+         public List<Token> Parameters { get; }
+         public List<Stmt> Body { get; }
+         public Function (Token name, List<Token> parameters, List<Stmt> body) {
+            Name = name;
+            Parameters = parameters;
+            Body = body;
+         }
+
+         public override T Accept<T>(IStmtVisitor<T> visitor) {
+            return visitor.VisitFunctionStmt(this);
          }
       }
 

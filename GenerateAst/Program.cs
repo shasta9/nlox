@@ -21,6 +21,7 @@ namespace GenerateAst {
             "Stmt",
             new[] { "Block      : List<Stmt> statements",
                     "Expression : Expr xpression",
+                    "Function   : Token name, List<Token> parameters, List<Stmt> body",
                     "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                     "Print      : Expr xpression",
                     "Var        : Token name, Expr initializer",
@@ -37,6 +38,8 @@ namespace GenerateAst {
       }
 
       private static void NameSpace(StreamWriter writer) {
+         writer.WriteLine("using System.Collections.Generic;");
+         writer.WriteLine();
          writer.WriteLine("namespace NLox {");
       }
 
