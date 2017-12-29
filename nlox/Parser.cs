@@ -65,7 +65,18 @@ namespace NLox {
          }
          Consume(RIGHT_PAREN, "Expect ')' after for clauses.");
          Stmt body = Statement();
-         ///////////////////////////////
+         if (increment != null) {
+            body = new Stmt.Block(
+               new List<Stmt>(
+                  new[] { body, new Stmt.Expression(increment) }));
+         }
+         if (condition == null) condition = new Expr.Literal(true);
+         body = new Stmt.While(condition, body);
+         if (initializer != null) {
+            body = new Stmt.Block(
+               new List<Stmt>(
+                  new[] { initializer, body }));
+         }
          return body;
       }
 
