@@ -10,6 +10,7 @@ namespace NLox {
          T VisitFunctionStmt(Function stmt);
          T VisitIfStmt(If stmt);
          T VisitPrintStmt(Print stmt);
+         T VisitReturnStmt(Return stmt);
          T VisitVarStmt(Var stmt);
          T VisitWhileStmt(While stmt);
       }
@@ -76,6 +77,19 @@ namespace NLox {
 
          public override T Accept<T>(IStmtVisitor<T> visitor) {
             return visitor.VisitPrintStmt(this);
+         }
+      }
+
+      public class Return : Stmt {
+         public Token Keyword { get; }
+         public Expr Value { get; }
+         public Return (Token keyword, Expr value) {
+            Keyword = keyword;
+            Value = value;
+         }
+
+         public override T Accept<T>(IStmtVisitor<T> visitor) {
+            return visitor.VisitReturnStmt(this);
          }
       }
 

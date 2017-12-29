@@ -4,15 +4,15 @@ using static NLox.TokenType;
 
 namespace NLox {
    internal class Interpreter : Expr.IExprVisitor<object>, Stmt.IStmtVisitor<Nothing> {
-
-      private readonly Environment globals;
       private Environment environment;
 
       public Interpreter() {
-         globals = new Environment();
-         environment = globals;
-         globals.Define("clock", new Clock());
+         Globals = new Environment();
+         environment = Globals;
+         Globals.Define("clock", new Clock());
       }
+
+      public Environment Globals { get; }
 
       public void Interpret(List<Stmt> statements) {
          try {
@@ -154,7 +154,7 @@ namespace NLox {
          return Nothing.AtAll;
       }
 
-      private void ExecuteBlock(List<Stmt> statements, Environment blockEnvironment) {
+      public void ExecuteBlock(List<Stmt> statements, Environment blockEnvironment) {
          Environment previous = environment;
          try {
             environment = blockEnvironment;
@@ -172,8 +172,14 @@ namespace NLox {
          return Nothing.AtAll;
       }
 
+      public Nothing VisitFunctionStmt(Stmt.Function stmt) {
+         LoxFunction function = new LoxFunction(stmt, environment);
+         environment.Define(stmt.Name.Lexeme, function);
+         return Nothing.AtAll;
+      }
+
       public Nothing VisitIfStmt(Stmt.If stmt) {
-         if (IsTruthy(stmt.Condition)) {
+         if (IsTruthy(Evaluate(stmt.Condition))) {
             Execute(stmt.ThenBranch);
          }
          else if (stmt.ElseBranch != null) {
@@ -186,6 +192,12 @@ namespace NLox {
          object value = Evaluate(stmt.Xpression);
          Console.WriteLine(Stringify(value));
          return Nothing.AtAll;
+      }
+
+      public Nothing VisitReturnStmt(Stmt.Return stmt) {
+         object value = null;
+         if (stmt.Value != null) value = Evaluate(stmt.Value);
+         throw new Return(value);
       }
 
       public Nothing VisitVarStmt(Stmt.Var stmt) {

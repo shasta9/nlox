@@ -1,7 +1,6 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq.Expressions;
 using static NLox.TokenType;
 
 namespace NLox {
@@ -38,6 +37,7 @@ namespace NLox {
          if (Match(FOR)) return ForStatement();
          if (Match(IF)) return IfStatement();
          if (Match(PRINT)) return PrintStatement();
+         if (Match(RETURN)) return ReturnStatement();
          if (Match(WHILE)) return WhileStatement();
          if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
          return ExpressionStatement();
@@ -97,6 +97,16 @@ namespace NLox {
          Expr value = Expression();
          Consume(SEMICOLON, "Expect ';' after value.");
          return new Stmt.Print(value);
+      }
+
+      private Stmt ReturnStatement() {
+         Token keyword = Previous();
+         Expr value = null;
+         if (!Check(SEMICOLON)) {
+            value = Expression();
+         }
+         Consume(SEMICOLON, "Expect ';' after return value.");
+         return new Stmt.Return(keyword, value);
       }
 
       private Stmt WhileStatement() {
