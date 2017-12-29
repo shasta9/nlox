@@ -17,6 +17,10 @@ namespace NLox {
          return sb.ToString();
       }
 
+      public string VisitCallExpr(Expr.Call expr) {
+         throw new NotImplementedException();
+      }
+
       public string VisitGroupingExpr(Expr.Grouping expr) {
          return expr.Expression.Accept(this);
       }

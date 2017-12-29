@@ -71,6 +71,10 @@ namespace NLox {
          return null;
       }
 
+      public object VisitCallExpr(Expr.Call expr) {
+         throw new NotImplementedException();
+      }
+
       public object VisitGroupingExpr(Expr.Grouping expr) {
          return Evaluate(expr.Expression);
       }

@@ -9,6 +9,7 @@ namespace GenerateAst {
             "Expr",
             new[] { "Assign   : Token name, Expr value",
                     "Binary   : Expr left, Token opr, Expr right",
+                    "Call     : Expr callee, Token paren, List<Expr> arguments",
                     "Grouping : Expr expression",
                     "Literal  : object value",
                     "Logical  : Expr left, Token opr, Expr right",

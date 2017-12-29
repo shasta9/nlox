@@ -16,6 +16,10 @@ namespace NLox {
          return Parenthesise(expr.Opr.Lexeme, expr.Left, expr.Right);
       }
 
+      public string VisitCallExpr(Expr.Call expr) {
+         throw new System.NotImplementedException();
+      }
+
       public string VisitGroupingExpr(Expr.Grouping expr) {
          return Parenthesise("group", expr.Expression);
       }
