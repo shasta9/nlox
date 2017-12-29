@@ -7,8 +7,10 @@ namespace NLox {
       public interface IStmtVisitor<T> {
          T VisitBlockStmt(Block stmt);
          T VisitExpressionStmt(Expression stmt);
+         T VisitIfStmt(If stmt);
          T VisitPrintStmt(Print stmt);
          T VisitVarStmt(Var stmt);
+         T VisitWhileStmt(While stmt);
       }
 
       public abstract T Accept<T>(IStmtVisitor<T> visitor);
@@ -35,6 +37,21 @@ namespace NLox {
          }
       }
 
+      public class If : Stmt {
+         public Expr Condition { get; }
+         public Stmt ThenBranch { get; }
+         public Stmt ElseBranch { get; }
+         public If (Expr condition, Stmt thenBranch, Stmt elseBranch) {
+            Condition = condition;
+            ThenBranch = thenBranch;
+            ElseBranch = elseBranch;
+         }
+
+         public override T Accept<T>(IStmtVisitor<T> visitor) {
+            return visitor.VisitIfStmt(this);
+         }
+      }
+
       public class Print : Stmt {
          public Expr Xpression { get; }
          public Print (Expr xpression) {
@@ -56,6 +73,19 @@ namespace NLox {
 
          public override T Accept<T>(IStmtVisitor<T> visitor) {
             return visitor.VisitVarStmt(this);
+         }
+      }
+
+      public class While : Stmt {
+         public Expr Condition { get; }
+         public Stmt Body { get; }
+         public While (Expr condition, Stmt body) {
+            Condition = condition;
+            Body = body;
+         }
+
+         public override T Accept<T>(IStmtVisitor<T> visitor) {
+            return visitor.VisitWhileStmt(this);
          }
       }
    }

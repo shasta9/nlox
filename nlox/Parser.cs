@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using static NLox.TokenType;
 
@@ -13,16 +14,12 @@ namespace NLox {
          this.tokens = tokens;
       }
 
-      internal List<Stmt> Parse() {
+      public List<Stmt> Parse() {
          var statements = new List<Stmt>();
          while (!IsAtEnd()) {
             statements.Add(Declaration());
          }
          return statements;
-      }
-
-      private Expr Expression() {
-         return Assignment();
       }
 
       private Stmt Declaration() {
@@ -37,15 +34,65 @@ namespace NLox {
       }
 
       private Stmt Statement() {
+         if (Match(FOR)) return ForStatement();
+         if (Match(IF)) return IfStatement();
          if (Match(PRINT)) return PrintStatement();
-         if(Match(LEFT_BRACE))return new Stmt.Block(Block());
+         if (Match(WHILE)) return WhileStatement();
+         if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
          return ExpressionStatement();
+      }
+
+      private Stmt ForStatement() {
+         Consume(LEFT_PAREN, "Expect '(' after 'for'.");
+         Stmt initializer;
+         if (Match(SEMICOLON)) {
+            initializer = null;
+         }
+         else if (Match(VAR)) {
+            initializer = VarDeclaration();
+         }
+         else {
+            initializer = ExpressionStatement();
+         }
+         Expr condition = null;
+         if (!Check(SEMICOLON)) {
+            condition = Expression();
+         }
+         Consume(SEMICOLON, "Expect ';' after loop condition.");
+         Expr increment = null;
+         if (!Check(RIGHT_PAREN)) {
+            increment = Expression();
+         }
+         Consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+         Stmt body = Statement();
+         ///////////////////////////////
+         return body;
+      }
+
+      private Stmt IfStatement() {
+         Consume(LEFT_PAREN, "Expect '(' after 'if'.");
+         Expr condition = Expression();
+         Consume(RIGHT_PAREN, "Expect ')' after if condition.");
+         Stmt thenBranch = Statement();
+         Stmt elseBranch = null;
+         if (Match(ELSE)) {
+            elseBranch = Statement();
+         }
+         return new Stmt.If(condition, thenBranch, elseBranch);
       }
 
       private Stmt PrintStatement() {
          Expr value = Expression();
          Consume(SEMICOLON, "Expect ';' after value.");
          return new Stmt.Print(value);
+      }
+
+      private Stmt WhileStatement() {
+         Consume(LEFT_PAREN, "Expect '(' after 'while'.");
+         Expr condition = Expression();
+         Consume(RIGHT_PAREN, "Expect ')' after while condition.");
+         Stmt body = Statement();
+         return new Stmt.While(condition, body);
       }
 
       private Stmt VarDeclaration() {
@@ -65,7 +112,7 @@ namespace NLox {
       }
 
       private List<Stmt> Block() {
-         List<Stmt> statements =new List<Stmt>();
+         List<Stmt> statements = new List<Stmt>();
          while (!Check(RIGHT_BRACE) && !IsAtEnd()) {
             statements.Add(Declaration());
          }
@@ -73,8 +120,12 @@ namespace NLox {
          return statements;
       }
 
+      private Expr Expression() {
+         return Assignment();
+      }
+
       private Expr Assignment() {
-         Expr expr = Equality();
+         Expr expr = Or();
 
          if (Match(EQUAL)) {
             Token equals = Previous();
@@ -88,6 +139,26 @@ namespace NLox {
             Error(equals, "Invalid assignment target.");
          }
 
+         return expr;
+      }
+
+      private Expr Or() {
+         Expr expr = And();
+         while (Match(OR)) {
+            Token opr = Previous();
+            Expr right = And();
+            expr = new Expr.Logical(expr, opr, right);
+         }
+         return expr;
+      }
+
+      private Expr And() {
+         Expr expr = Equality();
+         while (Match(AND)) {
+            Token opr = Previous();
+            Expr right = Equality();
+            expr = new Expr.Logical(expr, opr, right);
+         }
          return expr;
       }
 
@@ -219,7 +290,4 @@ namespace NLox {
          return new ParseError();
       }
    }
-
-   public class ParseError : Exception { }
-
 }

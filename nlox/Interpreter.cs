@@ -79,6 +79,17 @@ namespace NLox {
          return expr.Value;
       }
 
+      public object VisitLogicalExpr(Expr.Logical expr) {
+         object left = Evaluate(expr.Left);
+         if (expr.Opr.Type == OR) {
+            if (IsTruthy(left)) return left;
+         }
+         else {
+            if (!IsTruthy(left)) return left;
+         }
+         return Evaluate(expr.Right);
+      }
+
       public object VisitUnaryExpr(Expr.Unary expr) {
          object right = Evaluate(expr.Right);
          switch (expr.Opr.Type) {
@@ -138,6 +149,16 @@ namespace NLox {
          return Nothing.AtAll;
       }
 
+      public Nothing VisitIfStmt(Stmt.If stmt) {
+         if (IsTruthy(stmt.Condition)) {
+            Execute(stmt.ThenBranch);
+         }
+         else if (stmt.ElseBranch != null) {
+            Execute(stmt.ElseBranch);
+         }
+         return Nothing.AtAll;
+      }
+
       public Nothing VisitPrintStmt(Stmt.Print stmt) {
          object value = Evaluate(stmt.Xpression);
          Console.WriteLine(Stringify(value));
@@ -153,12 +174,18 @@ namespace NLox {
          return Nothing.AtAll;
       }
 
+      public Nothing VisitWhileStmt(Stmt.While stmt) {
+         while (IsTruthy(Evaluate(stmt.Condition))) {
+            Execute(stmt.Body);
+         }
+         return Nothing.AtAll;
+      }
+
       private bool IsTruthy(object obj) {
          if (obj == null) return false;
          if (obj is bool b) return b;
          return true;
       }
-
 
       private bool IsEqual(object a, object b) {
          // nil is only equal to nil

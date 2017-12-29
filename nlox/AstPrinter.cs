@@ -25,6 +25,10 @@ namespace NLox {
          return expr.Value.ToString();
       }
 
+      public string VisitLogicalExpr(Expr.Logical expr) {
+         throw new System.NotImplementedException();
+      }
+
       public string VisitUnaryExpr(Expr.Unary expr) {
          return Parenthesise(expr.Opr.Lexeme, expr.Right);
       }
