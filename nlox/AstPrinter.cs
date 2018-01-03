@@ -21,7 +21,7 @@ namespace NLox {
       }
 
       public string VisitGroupingExpr(Expr.Grouping expr) {
-         return Parenthesise("group", expr.Expression);
+         return Parenthesise("group", expr.Xpression);
       }
 
       public string VisitLiteralExpr(Expr.Literal expr) {

@@ -5,6 +5,7 @@ using static NLox.TokenType;
 namespace NLox {
    internal class Interpreter : Expr.IExprVisitor<object>, Stmt.IStmtVisitor<Nothing> {
       private Environment environment;
+      private readonly Dictionary<Expr, int> locals = new Dictionary<Expr, int>();
 
       public Interpreter() {
          Globals = new Environment();
@@ -32,7 +33,12 @@ namespace NLox {
 
       public object VisitAssignExpr(Expr.Assign expr) {
          object value = Evaluate(expr.Value);
-         environment.Assign(expr.Name, value);
+         if (locals.TryGetValue(expr, out int distance)) {
+            environment.AssignAt(distance, expr.Name, value);
+         }
+         else {
+            Globals.Assign(expr.Name, value);
+         }
          return value;
       }
 
@@ -95,7 +101,7 @@ namespace NLox {
       }
 
       public object VisitGroupingExpr(Expr.Grouping expr) {
-         return Evaluate(expr.Expression);
+         return Evaluate(expr.Xpression);
       }
 
       public object VisitLiteralExpr(Expr.Literal expr) {
@@ -127,7 +133,14 @@ namespace NLox {
       }
 
       public object VisitVariableExpr(Expr.Variable expr) {
-         return environment.Get(expr.Name);
+         return LookUpVariable(expr.Name, expr);
+      }
+
+      private object LookUpVariable(Token name, Expr expr) {
+         if (locals.TryGetValue(expr, out int distance)) {
+            return environment.GetAt(distance, name.Lexeme);
+         }
+         return Globals.Get(name);
       }
 
       private void CheckNumberOperand(Token opr, object operand) {
@@ -147,6 +160,10 @@ namespace NLox {
 
       private void Execute(Stmt stmt) {
          stmt.Accept(this);
+      }
+
+      public void Resolve(Expr expr, int depth) {
+         locals.Add(expr, depth);
       }
 
       public Nothing VisitBlockStmt(Stmt.Block stmt) {

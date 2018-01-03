@@ -61,9 +61,9 @@ namespace NLox {
       }
 
       public class Grouping : Expr {
-         public Expr Expression { get; }
-         public Grouping (Expr expression) {
-            Expression = expression;
+         public Expr Xpression { get; }
+         public Grouping (Expr xpression) {
+            Xpression = xpression;
          }
 
          public override T Accept<T>(IExprVisitor<T> visitor) {

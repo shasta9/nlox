@@ -22,7 +22,7 @@ namespace NLox {
       }
 
       public string VisitGroupingExpr(Expr.Grouping expr) {
-         return expr.Expression.Accept(this);
+         return expr.Xpression.Accept(this);
       }
 
       public string VisitLiteralExpr(Expr.Literal expr) {
