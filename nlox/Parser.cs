@@ -4,8 +4,8 @@ using static NLox.TokenType;
 
 namespace NLox {
    internal class Parser {
-
       private readonly List<Token> tokens;
+
       private int current = 0;
 
       public Parser(List<Token> tokens) {
@@ -22,6 +22,7 @@ namespace NLox {
 
       private Stmt Declaration() {
          try {
+            if (Match(CLASS)) return ClassDeclaration();
             if (Match(FUN)) return Function("function");
             if (Match(VAR)) return VarDeclaration();
             return Statement();
@@ -30,6 +31,45 @@ namespace NLox {
             Synchronize();
             return null;
          }
+      }
+
+      private Stmt ClassDeclaration() {
+         Token name = Consume(IDENTIFIER, "Expect class name.");
+         Consume(LEFT_BRACE, "Expect '{' before class body.");
+         List<Stmt.Function> methods = new List<Stmt.Function>();
+         while (!Check(RIGHT_BRACE) && !IsAtEnd()) {
+            methods.Add(Function("method"));
+         }
+         Consume(RIGHT_BRACE, "Expect '}' after class body.");
+         return new Stmt.Class(name, methods);
+      }
+
+      private Stmt.Function Function(string kind) {
+         Token name = Consume(IDENTIFIER, $"Expect {kind} name.");
+         Consume(LEFT_PAREN, $"Expect '(' after {kind} name.");
+         List<Token> parameters = new List<Token>();
+         if (!Check(RIGHT_PAREN)) {
+            do {
+               if (parameters.Count >= 8) {
+                  Error(Peek(), "Cannot have more than 8 parameters.");
+               }
+               parameters.Add(Consume(IDENTIFIER, "Expect parameter name."));
+            } while (Match(COMMA));
+         }
+         Consume(RIGHT_PAREN, "Expect ')' after parameters.");
+         Consume(LEFT_BRACE, $"Expect '{{' before {kind} body.");
+         List<Stmt> body = Block();
+         return new Stmt.Function(name, parameters, body);
+      }
+
+      private Stmt VarDeclaration() {
+         Token name = Consume(IDENTIFIER, "Expect variable name.");
+         Expr initializer = null;
+         if (Match(EQUAL)) {
+            initializer = Expression();
+         }
+         Consume(SEMICOLON, "Expect ';' after variable declaration.");
+         return new Stmt.Var(name, initializer);
       }
 
       private Stmt Statement() {
@@ -116,38 +156,10 @@ namespace NLox {
          return new Stmt.While(condition, body);
       }
 
-      private Stmt VarDeclaration() {
-         Token name = Consume(IDENTIFIER, "Expect variable name.");
-         Expr initializer = null;
-         if (Match(EQUAL)) {
-            initializer = Expression();
-         }
-         Consume(SEMICOLON, "Expect ';' after variable declaration.");
-         return new Stmt.Var(name, initializer);
-      }
-
       private Stmt ExpressionStatement() {
          Expr value = Expression();
          Consume(SEMICOLON, "Expect ';' after expression.");
          return new Stmt.Expression(value);
-      }
-
-      private Stmt.Function Function(string kind) {
-         Token name = Consume(IDENTIFIER, $"Expect {kind} name.");
-         Consume(LEFT_PAREN, $"Expect '(' after {kind} name.");
-         List<Token> parameters = new List<Token>();
-         if (!Check(RIGHT_PAREN)) {
-            do {
-               if (parameters.Count >= 8) {
-                  Error(Peek(), "Cannot have more than 8 parameters.");
-               }
-               parameters.Add(Consume(IDENTIFIER, "Expect parameter name."));
-            } while (Match(COMMA));
-         }
-         Consume(RIGHT_PAREN, "Expect ')' after parameters.");
-         Consume(LEFT_BRACE, $"Expect '{{' before {kind} body.");
-         List<Stmt> body = Block();
-         return new Stmt.Function(name, parameters, body);
       }
 
       private List<Stmt> Block() {
@@ -255,6 +267,10 @@ namespace NLox {
          while (true) {
             if (Match(LEFT_PAREN)) {
                expr = FinishCall(expr);
+            }
+            else if (Match(DOT)) {
+               Token name = Consume(IDENTIFIER, "Expect property name after '.'.");
+               expr = new Expr.Get(expr, name);
             }
             else {
                break;

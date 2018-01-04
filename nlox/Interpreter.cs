@@ -184,6 +184,13 @@ namespace NLox {
          }
       }
 
+      public Nothing VisitClassStmt(Stmt.Class stmt) {
+         environment.Define(stmt.Name.Lexeme, null);
+         LoxClass klass = new LoxClass(stmt.Name.Lexeme);
+         environment.Assign(stmt.Name, klass);
+         return Nothing.AtAll;
+      }
+
       public Nothing VisitExpressionStmt(Stmt.Expression stmt) {
          Evaluate(stmt.Xpression);
          return Nothing.AtAll;

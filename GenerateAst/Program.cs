@@ -3,14 +3,15 @@
 namespace GenerateAst {
    class Program {
       static void Main(string[] args) {
-         var outputPath = @"C:\Users\shast\OneDrive\Documents\Visual Studio 2017\Projects\nlox\nlox\";
+         var outputPath = @"D:\dev\software\nlox\nlox\";
          DefineAst(
             outputPath,
             "Expr",
             new[] { "Assign   : Token name, Expr value",
                     "Binary   : Expr left, Token opr, Expr right",
                     "Call     : Expr callee, Token paren, List<Expr> arguments",
-                    "Grouping : Expr expression",
+                    "Get      : Expr objekt, Token name",
+                    "Grouping : Expr xpression",
                     "Literal  : object value",
                     "Logical  : Expr left, Token opr, Expr right",
                     "Unary    : Token opr, Expr right",
@@ -20,6 +21,7 @@ namespace GenerateAst {
             outputPath,
             "Stmt",
             new[] { "Block      : List<Stmt> statements",
+                    "Class      : Token name, List<Stmt.Function> methods",
                     "Expression : Expr xpression",
                     "Function   : Token name, List<Token> parameters, List<Stmt> body",
                     "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",

@@ -8,6 +8,7 @@ namespace NLox {
          T VisitAssignExpr(Assign expr);
          T VisitBinaryExpr(Binary expr);
          T VisitCallExpr(Call expr);
+         T VisitGetExpr(Get expr);
          T VisitGroupingExpr(Grouping expr);
          T VisitLiteralExpr(Literal expr);
          T VisitLogicalExpr(Logical expr);
@@ -57,6 +58,19 @@ namespace NLox {
 
          public override T Accept<T>(IExprVisitor<T> visitor) {
             return visitor.VisitCallExpr(this);
+         }
+      }
+
+      public class Get : Expr {
+         public Expr Objekt { get; }
+         public Token Name { get; }
+         public Get (Expr objekt, Token name) {
+            Objekt = objekt;
+            Name = name;
+         }
+
+         public override T Accept<T>(IExprVisitor<T> visitor) {
+            return visitor.VisitGetExpr(this);
          }
       }
 

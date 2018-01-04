@@ -12,7 +12,9 @@ namespace NLox {
 
       private static void Main(string[] args) {
 
-         RunFile("scope-problem.lx");
+         RunFile("bagel.lx");
+         //RunFile("devonshire-cream.lx");
+         //RunFile("scope-problem.lx");
          //RunFile("not-a-function.lx");
          //RunFile("top-level-return.lx");
          //RunFile("double-declaration.lx");

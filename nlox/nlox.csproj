@@ -63,7 +63,9 @@
     <Compile Include="Expr.cs" />
     <Compile Include="ICallable.cs" />
     <Compile Include="Interpreter.cs" />
+    <Compile Include="LoxClass.cs" />
     <Compile Include="LoxFunction.cs" />
+    <Compile Include="LoxInstance.cs" />
     <Compile Include="nLox.cs" />
     <Compile Include="Nothing.cs" />
     <Compile Include="ParseError.cs" />
