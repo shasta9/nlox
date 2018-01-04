@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nLox", "nlox\nLox.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateAst", "GenerateAst\GenerateAst.csproj", "{29F6266C-F8FD-4EA3-8F23-E8693FB51DEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackSpike", "StackSpike\StackSpike.csproj", "{966EE5E3-C8B8-4684-B600-6E7E694B4DAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{29F6266C-F8FD-4EA3-8F23-E8693FB51DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29F6266C-F8FD-4EA3-8F23-E8693FB51DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29F6266C-F8FD-4EA3-8F23-E8693FB51DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{966EE5E3-C8B8-4684-B600-6E7E694B4DAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{966EE5E3-C8B8-4684-B600-6E7E694B4DAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{966EE5E3-C8B8-4684-B600-6E7E694B4DAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{966EE5E3-C8B8-4684-B600-6E7E694B4DAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

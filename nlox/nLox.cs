@@ -13,7 +13,11 @@ namespace NLox {
       private static void Main(string[] args) {
 
          RunFile("scope-problem.lx");
-         
+         //RunFile("not-a-function.lx");
+         //RunFile("top-level-return.lx");
+         //RunFile("double-declaration.lx");
+         //RunFile("read-var-in-initializer.lx");
+         Console.ReadLine();
          //if (args.Length > 1) {
          //   Console.WriteLine("Usage: nlox [script]");
          //}
@@ -62,10 +66,10 @@ namespace NLox {
 
       public static void Error(Token token, String message) {
          if (token.Type == TokenType.EOF) {
-            Report(token.Line, " at end", message);
+            Report(token.Line, "at end", message);
          }
          else {
-            Report(token.Line, " at '" + token.Lexeme + "'", message);
+            Report(token.Line, "at '" + token.Lexeme + "'", message);
          }
       }
 

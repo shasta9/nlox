@@ -64,9 +64,9 @@ namespace NLox {
       private void Declare(Token name) {
          if (scopes.Count == 0) return;
          if (scopes.Peek().ContainsKey(name.Lexeme)) {
-            nLox.Error(name, " Variable with this name is already declared in this scope.");
+            nLox.Error(name, "Variable with this name is already declared in this scope.");
          }
-         scopes.Peek().Add(name.Lexeme, false);
+         scopes.Peek()[name.Lexeme]= false;
       }
 
       private void Define(Token name) {
@@ -115,13 +115,12 @@ namespace NLox {
       }
 
       public Nothing VisitVariableExpr(Expr.Variable expr) {
-         if (scopes.Count != 0 && scopes.Peek()[expr.Name.Lexeme] == false) {
+         if (scopes.Count != 0 && scopes.Peek().ContainsKey(expr.Name.Lexeme) && scopes.Peek()[expr.Name.Lexeme] == false) { 
             nLox.Error(expr.Name, "Cannot read local variable in its own initializer.");
          }
          ResolveLocal(expr, expr.Name);
          return Nothing.AtAll;
       }
-
 
       public Nothing VisitBlockStmt(Stmt.Block stmt) {
          BeginScope();
