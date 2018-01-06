@@ -31,9 +31,11 @@ namespace NLox {
 
       public class Class : Stmt {
          public Token Name { get; }
+         public Expr Superclass { get; }
          public List<Stmt.Function> Methods { get; }
-         public Class (Token name, List<Stmt.Function> methods) {
+         public Class (Token name, Expr superclass, List<Stmt.Function> methods) {
             Name = name;
+            Superclass = superclass;
             Methods = methods;
          }
 

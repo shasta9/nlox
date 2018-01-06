@@ -23,7 +23,7 @@ namespace GenerateAst {
             outputPath,
             "Stmt",
             new[] { "Block      : List<Stmt> statements",
-                    "Class      : Token name, List<Stmt.Function> methods",
+                    "Class      : Token name, Expr superclass, List<Stmt.Function> methods",
                     "Expression : Expr xpression",
                     "Function   : Token name, List<Token> parameters, List<Stmt> body",
                     "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
