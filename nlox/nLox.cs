@@ -11,8 +11,11 @@ namespace NLox {
       private static bool hadRuntimeError = false;
 
       private static void Main(string[] args) {
-
-         RunFile("bagel.lx");
+         RunFile("init-return.lx");
+         //RunFile("reinit.lx");
+         //RunFile("cake.lx");
+         //RunFile("bacon.lx");
+         //RunFile("bagel.lx");
          //RunFile("devonshire-cream.lx");
          //RunFile("scope-problem.lx");
          //RunFile("not-a-function.lx");
@@ -35,7 +38,7 @@ namespace NLox {
          var bytes = File.ReadAllBytes(path);
          string source = Encoding.Default.GetString(bytes);
          Run(source);
-         // Indicate an error in the exit code.
+         // Indicate an error in the exit code.        
          if (hadError) System.Environment.Exit(65);
          if (hadRuntimeError) System.Environment.Exit(70);
       }

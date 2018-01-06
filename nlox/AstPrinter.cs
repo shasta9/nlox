@@ -41,6 +41,10 @@ namespace NLox {
          throw new System.NotImplementedException();
       }
 
+      public string VisitThisExpr(Expr.This expr) {
+         throw new System.NotImplementedException();
+      }
+
       public string VisitUnaryExpr(Expr.Unary expr) {
          return Parenthesise(expr.Opr.Lexeme, expr.Right);
       }

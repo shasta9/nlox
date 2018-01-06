@@ -2,7 +2,7 @@
 
 namespace NLox {
    internal interface ICallable {
-      int Arity { get; }
+      int Arity();
       object Call(Interpreter interpreter, List<object> arguments);
    }
 }

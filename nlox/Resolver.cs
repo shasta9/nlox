@@ -2,13 +2,21 @@
 
 namespace NLox {
    internal class Resolver : Expr.IExprVisitor<Nothing>, Stmt.IStmtVisitor<Nothing> {
+      private enum ClassType {
+         None,
+         Class
+      }      
       private enum FunctionType {
          None,
-         Function
+         Function,
+         Initializer,
+         Method
       }
       private readonly Interpreter interpreter;
       private readonly Stack<Dictionary<string, bool>> scopes = new Stack<Dictionary<string, bool>>();
+      private ClassType currentClass = ClassType.None;
       private FunctionType currentFunction = FunctionType.None;
+
 
       public Resolver(Interpreter interpreter) {
          this.interpreter = interpreter;
@@ -66,7 +74,7 @@ namespace NLox {
          if (scopes.Peek().ContainsKey(name.Lexeme)) {
             nLox.Error(name, "Variable with this name is already declared in this scope.");
          }
-         scopes.Peek()[name.Lexeme]= false;
+         scopes.Peek()[name.Lexeme] = false;
       }
 
       private void Define(Token name) {
@@ -120,13 +128,22 @@ namespace NLox {
          return Nothing.AtAll;
       }
 
+      public Nothing VisitThisExpr(Expr.This expr) {
+         if (currentClass == ClassType.None) {
+            nLox.Error(expr.Keyword, "Cannot use 'this' outside of a class.");
+            return Nothing.AtAll;
+         }
+         ResolveLocal(expr, expr.Keyword);
+         return Nothing.AtAll;
+      }
+
       public Nothing VisitUnaryExpr(Expr.Unary expr) {
          Resolve(expr.Right);
          return Nothing.AtAll;
       }
 
       public Nothing VisitVariableExpr(Expr.Variable expr) {
-         if (scopes.Count != 0 && scopes.Peek().ContainsKey(expr.Name.Lexeme) && scopes.Peek()[expr.Name.Lexeme] == false) { 
+         if (scopes.Count != 0 && scopes.Peek().ContainsKey(expr.Name.Lexeme) && scopes.Peek()[expr.Name.Lexeme] == false) {
             nLox.Error(expr.Name, "Cannot read local variable in its own initializer.");
          }
          ResolveLocal(expr, expr.Name);
@@ -143,6 +160,19 @@ namespace NLox {
       public Nothing VisitClassStmt(Stmt.Class stmt) {
          Declare(stmt.Name);
          Define(stmt.Name);
+         ClassType enclosingClass = currentClass;
+         currentClass = ClassType.Class;
+         BeginScope();
+         scopes.Peek().Add("this", true);
+         foreach (var method in stmt.Methods) {
+            FunctionType declaration = FunctionType.Method;
+            if (method.Name.Lexeme.Equals("init")) {
+               declaration = FunctionType.Initializer;
+            }
+            ResolveFunction(method, declaration);
+         }
+         EndScope();
+         currentClass = enclosingClass;
          return Nothing.AtAll;
       }
 
@@ -172,9 +202,14 @@ namespace NLox {
 
       public Nothing VisitReturnStmt(Stmt.Return stmt) {
          if (currentFunction == FunctionType.None) {
-            nLox.Error(stmt.Keyword,"Cannot return from top level code.");
+            nLox.Error(stmt.Keyword, "Cannot return from top level code.");
          }
-         if (stmt.Value != null) Resolve(stmt.Value);
+         if (stmt.Value != null) {
+            if (currentFunction == FunctionType.Initializer) {
+               nLox.Error(stmt.Keyword,"Cannot return a value from an initializer.");
+            }
+            Resolve(stmt.Value);
+         }
          return Nothing.AtAll;
       }
 

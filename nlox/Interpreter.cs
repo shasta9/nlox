@@ -94,8 +94,8 @@ namespace NLox {
             throw new RuntimeError(expr.Paren, "Can only call functions and classes.");
          }
          ICallable function = (ICallable)callee;
-         if (arguments.Count != function.Arity) {
-            throw new RuntimeError(expr.Paren, $"Expected {function.Arity} arguments but got {arguments.Count}.");
+         if (arguments.Count != function.Arity()) {
+            throw new RuntimeError(expr.Paren, $"Expected {function.Arity()} arguments but got {arguments.Count}.");
          }
          return function.Call(this, arguments);
       }
@@ -136,6 +136,10 @@ namespace NLox {
          object value = Evaluate(expr.Value);
          ((LoxInstance) objekt).Set(expr.Name, value);
          return value;
+      }
+
+      public object VisitThisExpr(Expr.This expr) {
+         return LookUpVariable(expr.Keyword, expr);
       }
 
       public object VisitUnaryExpr(Expr.Unary expr) {
@@ -205,7 +209,12 @@ namespace NLox {
 
       public Nothing VisitClassStmt(Stmt.Class stmt) {
          environment.Define(stmt.Name.Lexeme, null);
-         LoxClass klass = new LoxClass(stmt.Name.Lexeme);
+         Dictionary<string, LoxFunction>methods = new Dictionary<string, LoxFunction>();
+         foreach (var method in stmt.Methods) {
+            LoxFunction function = new LoxFunction(method, environment, method.Name.Lexeme.Equals("init"));
+            methods.Add(method.Name.Lexeme, function);
+         }
+         LoxClass klass = new LoxClass(stmt.Name.Lexeme, methods);
          environment.Assign(stmt.Name, klass);
          return Nothing.AtAll;
       }
@@ -216,7 +225,7 @@ namespace NLox {
       }
 
       public Nothing VisitFunctionStmt(Stmt.Function stmt) {
-         LoxFunction function = new LoxFunction(stmt, environment);
+         LoxFunction function = new LoxFunction(stmt, environment, false);
          environment.Define(stmt.Name.Lexeme, function);
          return Nothing.AtAll;
       }

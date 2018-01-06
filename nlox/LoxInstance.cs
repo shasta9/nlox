@@ -14,6 +14,10 @@ namespace NLox {
          if (fields.ContainsKey(name.Lexeme)) {
             return fields[name.Lexeme];
          }
+
+         LoxFunction method = klass.FindMethod(this, name.Lexeme);
+         if (method != null) return method;
+
          throw new RuntimeError(name, $"Undefined property '{name.Lexeme}'.");
       }
 

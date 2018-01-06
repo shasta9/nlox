@@ -47,6 +47,10 @@ namespace NLox {
          throw new NotImplementedException();
       }
 
+      public string VisitThisExpr(Expr.This expr) {
+         throw new NotImplementedException();
+      }
+
       public string VisitUnaryExpr(Expr.Unary expr) {
          var sb = new StringBuilder();
          sb.Append(expr.Accept(this));
