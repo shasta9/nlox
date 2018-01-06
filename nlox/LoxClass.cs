@@ -2,10 +2,12 @@
 
 namespace NLox {
    internal class LoxClass : ICallable {
+      private readonly LoxClass superclass;
       private readonly Dictionary<string, LoxFunction> methods;
 
-      public LoxClass(string name, Dictionary<string, LoxFunction> methods) {
+      public LoxClass(string name, LoxClass superclass, Dictionary<string, LoxFunction> methods) {
          Name = name;
+         this.superclass = superclass;
          this.methods = methods;
       }
 
@@ -29,6 +31,9 @@ namespace NLox {
       public LoxFunction FindMethod(LoxInstance instance, string name) {
          if (methods.ContainsKey(name)) {
             return methods[name].Bind(instance);
+         }
+         if (superclass != null) {
+            return superclass.FindMethod(instance, name);
          }
          return null;
       }

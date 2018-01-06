@@ -36,13 +36,18 @@ namespace NLox {
 
       private Stmt ClassDeclaration() {
          Token name = Consume(IDENTIFIER, "Expect class name.");
+         Expr superclass = null;
+         if (Match(LESS)) {
+            Consume(IDENTIFIER, "Expect superclass name.");
+            superclass = new Expr.Variable(Previous());
+         }
          Consume(LEFT_BRACE, "Expect '{' before class body.");
          List<Stmt.Function> methods = new List<Stmt.Function>();
          while (!Check(RIGHT_BRACE) && !IsAtEnd()) {
             methods.Add(Function("method"));
          }
          Consume(RIGHT_BRACE, "Expect '}' after class body.");
-         return new Stmt.Class(name, methods);
+         return new Stmt.Class(name, superclass, methods);
       }
 
       private Stmt.Function Function(string kind) {
@@ -186,7 +191,7 @@ namespace NLox {
                return new Expr.Assign(name, value);
             }
             else if (expr is Expr.Get) {
-               Expr.Get get = (Expr.Get) expr;
+               Expr.Get get = (Expr.Get)expr;
                return new Expr.Set(get.Objekt, get.Name, value);
             }
             Error(equals, "Invalid assignment target.");

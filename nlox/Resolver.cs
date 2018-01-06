@@ -162,6 +162,9 @@ namespace NLox {
          Define(stmt.Name);
          ClassType enclosingClass = currentClass;
          currentClass = ClassType.Class;
+         if (stmt.Superclass != null) {
+            Resolve(stmt.Superclass);
+         }
          BeginScope();
          scopes.Peek().Add("this", true);
          foreach (var method in stmt.Methods) {

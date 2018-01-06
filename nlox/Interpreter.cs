@@ -209,12 +209,19 @@ namespace NLox {
 
       public Nothing VisitClassStmt(Stmt.Class stmt) {
          environment.Define(stmt.Name.Lexeme, null);
+         object superclass = null;
+         if (stmt.Superclass != null) {
+            superclass = Evaluate(stmt.Superclass);
+            if (!(superclass is LoxClass)) {
+               throw new RuntimeError(stmt.Name, "Superclass must be a class.");
+            }
+         }
          Dictionary<string, LoxFunction>methods = new Dictionary<string, LoxFunction>();
          foreach (var method in stmt.Methods) {
             LoxFunction function = new LoxFunction(method, environment, method.Name.Lexeme.Equals("init"));
             methods.Add(method.Name.Lexeme, function);
          }
-         LoxClass klass = new LoxClass(stmt.Name.Lexeme, methods);
+         LoxClass klass = new LoxClass(stmt.Name.Lexeme, (LoxClass)superclass, methods);
          environment.Assign(stmt.Name, klass);
          return Nothing.AtAll;
       }
