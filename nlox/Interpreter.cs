@@ -100,6 +100,14 @@ namespace NLox {
          return function.Call(this, arguments);
       }
 
+      public object VisitGetExpr(Expr.Get expr) {
+         object objekt = Evaluate(expr.Objekt);
+         if (objekt is LoxInstance) {
+            return ((LoxInstance) objekt).Get(expr.Name);
+         }
+         throw new RuntimeError(expr.Name,"Only instances have properties.");
+      }
+
       public object VisitGroupingExpr(Expr.Grouping expr) {
          return Evaluate(expr.Xpression);
       }
@@ -117,6 +125,17 @@ namespace NLox {
             if (!IsTruthy(left)) return left;
          }
          return Evaluate(expr.Right);
+      }
+
+      public object VisitSetExpr(Expr.Set expr) {
+         object objekt = Evaluate(expr.Objekt);
+         if (!(objekt is LoxInstance)) {
+            throw new RuntimeError(expr.Name, "Only instances have fields.");
+         }
+
+         object value = Evaluate(expr.Value);
+         ((LoxInstance) objekt).Set(expr.Name, value);
+         return value;
       }
 
       public object VisitUnaryExpr(Expr.Unary expr) {

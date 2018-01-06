@@ -95,7 +95,8 @@ namespace NLox {
       }
 
       public Nothing VisitGetExpr(Expr.Get expr) {
-         throw new System.NotImplementedException();
+         Resolve(expr.Objekt);
+         return Nothing.AtAll;
       }
 
       public Nothing VisitGroupingExpr(Expr.Grouping expr) {
@@ -110,6 +111,12 @@ namespace NLox {
       public Nothing VisitLogicalExpr(Expr.Logical expr) {
          Resolve(expr.Left);
          Resolve(expr.Right);
+         return Nothing.AtAll;
+      }
+
+      public Nothing VisitSetExpr(Expr.Set expr) {
+         Resolve(expr.Value);
+         Resolve(expr.Objekt);
          return Nothing.AtAll;
       }
 

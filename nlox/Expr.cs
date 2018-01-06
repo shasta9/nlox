@@ -12,6 +12,7 @@ namespace NLox {
          T VisitGroupingExpr(Grouping expr);
          T VisitLiteralExpr(Literal expr);
          T VisitLogicalExpr(Logical expr);
+         T VisitSetExpr(Set expr);
          T VisitUnaryExpr(Unary expr);
          T VisitVariableExpr(Variable expr);
       }
@@ -108,6 +109,21 @@ namespace NLox {
 
          public override T Accept<T>(IExprVisitor<T> visitor) {
             return visitor.VisitLogicalExpr(this);
+         }
+      }
+
+      public class Set : Expr {
+         public Expr Objekt { get; }
+         public Token Name { get; }
+         public Expr Value { get; }
+         public Set (Expr objekt, Token name, Expr value) {
+            Objekt = objekt;
+            Name = name;
+            Value = value;
+         }
+
+         public override T Accept<T>(IExprVisitor<T> visitor) {
+            return visitor.VisitSetExpr(this);
          }
       }
 

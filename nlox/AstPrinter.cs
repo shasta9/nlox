@@ -20,6 +20,10 @@ namespace NLox {
          throw new System.NotImplementedException();
       }
 
+      public string VisitGetExpr(Expr.Get expr) {
+         throw new System.NotImplementedException();
+      }
+
       public string VisitGroupingExpr(Expr.Grouping expr) {
          return Parenthesise("group", expr.Xpression);
       }
@@ -30,6 +34,10 @@ namespace NLox {
       }
 
       public string VisitLogicalExpr(Expr.Logical expr) {
+         throw new System.NotImplementedException();
+      }
+
+      public string VisitSetExpr(Expr.Set expr) {
          throw new System.NotImplementedException();
       }
 

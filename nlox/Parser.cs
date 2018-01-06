@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using static NLox.TokenType;
 
 namespace NLox {
@@ -177,19 +178,19 @@ namespace NLox {
 
       private Expr Assignment() {
          Expr expr = Or();
-
          if (Match(EQUAL)) {
             Token equals = Previous();
             Expr value = Assignment();
-
             if (expr is Expr.Variable v) {
                Token name = v.Name;
                return new Expr.Assign(name, value);
             }
-
+            else if (expr is Expr.Get) {
+               Expr.Get get = (Expr.Get) expr;
+               return new Expr.Set(get.Objekt, get.Name, value);
+            }
             Error(equals, "Invalid assignment target.");
          }
-
          return expr;
       }
 
