@@ -1,0 +1,10 @@
+class Hello {
+	sayIt(n) {
+		for (var i = 0; i < n; i = i + 1) {
+			print "Hello World!";
+		}
+	}
+}
+
+var h = Hello();
+h.sayIt(10);

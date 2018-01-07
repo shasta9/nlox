@@ -12,7 +12,7 @@ namespace NLox {
 
       private static void Main(string[] args) {
 
-         RunFile(@"../../examples/fibonacci2.lx");
+         RunFile(@"../../examples/fibclass.lx");
          //RunFile("eclair.lx");
          //RunFile("superclass.lx");
          //RunFile("boston-cream.lx");
