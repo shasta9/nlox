@@ -4,8 +4,9 @@ namespace NLox {
    internal class Resolver : Expr.IExprVisitor<Nothing>, Stmt.IStmtVisitor<Nothing> {
       private enum ClassType {
          None,
-         Class
-      }      
+         Class,
+         Subclass
+      }
       private enum FunctionType {
          None,
          Function,
@@ -128,6 +129,17 @@ namespace NLox {
          return Nothing.AtAll;
       }
 
+      public Nothing VisitSuperExpr(Expr.Super expr) {
+         if (currentClass == ClassType.None) {
+            nLox.Error(expr.Keyword, "Cannot use 'super' outside of a class.");
+         }
+         else if (currentClass != ClassType.Subclass) {
+            nLox.Error(expr.Keyword, "Cannot use 'super' in a class with no superclass.");
+         }
+         ResolveLocal(expr, expr.Keyword);
+         return Nothing.AtAll;
+      }
+
       public Nothing VisitThisExpr(Expr.This expr) {
          if (currentClass == ClassType.None) {
             nLox.Error(expr.Keyword, "Cannot use 'this' outside of a class.");
@@ -163,7 +175,10 @@ namespace NLox {
          ClassType enclosingClass = currentClass;
          currentClass = ClassType.Class;
          if (stmt.Superclass != null) {
+            currentClass = ClassType.Subclass;
             Resolve(stmt.Superclass);
+            BeginScope();
+            scopes.Peek().Add("super", true);
          }
          BeginScope();
          scopes.Peek().Add("this", true);
@@ -175,6 +190,7 @@ namespace NLox {
             ResolveFunction(method, declaration);
          }
          EndScope();
+         if (stmt.Superclass != null) EndScope();
          currentClass = enclosingClass;
          return Nothing.AtAll;
       }
@@ -209,7 +225,7 @@ namespace NLox {
          }
          if (stmt.Value != null) {
             if (currentFunction == FunctionType.Initializer) {
-               nLox.Error(stmt.Keyword,"Cannot return a value from an initializer.");
+               nLox.Error(stmt.Keyword, "Cannot return a value from an initializer.");
             }
             Resolve(stmt.Value);
          }

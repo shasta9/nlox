@@ -41,6 +41,10 @@ namespace NLox {
          throw new System.NotImplementedException();
       }
 
+      public string VisitSuperExpr(Expr.Super expr) {
+         throw new System.NotImplementedException();
+      }
+
       public string VisitThisExpr(Expr.This expr) {
          throw new System.NotImplementedException();
       }

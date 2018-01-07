@@ -103,9 +103,9 @@ namespace NLox {
       public object VisitGetExpr(Expr.Get expr) {
          object objekt = Evaluate(expr.Objekt);
          if (objekt is LoxInstance) {
-            return ((LoxInstance) objekt).Get(expr.Name);
+            return ((LoxInstance)objekt).Get(expr.Name);
          }
-         throw new RuntimeError(expr.Name,"Only instances have properties.");
+         throw new RuntimeError(expr.Name, "Only instances have properties.");
       }
 
       public object VisitGroupingExpr(Expr.Grouping expr) {
@@ -134,8 +134,20 @@ namespace NLox {
          }
 
          object value = Evaluate(expr.Value);
-         ((LoxInstance) objekt).Set(expr.Name, value);
+         ((LoxInstance)objekt).Set(expr.Name, value);
          return value;
+      }
+
+      public object VisitSuperExpr(Expr.Super expr) {
+         int distance = locals[expr];
+         LoxClass superclass = (LoxClass) environment.GetAt(distance, "super");
+         // "this" is always one level nearer than "super"'s environment.
+         LoxInstance objekt = (LoxInstance) environment.GetAt(distance - 1, "this");
+         LoxFunction method = superclass.FindMethod(objekt, expr.Method.Lexeme);
+         if (method == null) {
+            throw new RuntimeError(expr.Method,$"Undefined property '{expr.Method.Lexeme}'.");
+         }
+         return method;
       }
 
       public object VisitThisExpr(Expr.This expr) {
@@ -215,13 +227,16 @@ namespace NLox {
             if (!(superclass is LoxClass)) {
                throw new RuntimeError(stmt.Name, "Superclass must be a class.");
             }
+            environment = new Environment(environment);
+            environment.Define("super", superclass);
          }
-         Dictionary<string, LoxFunction>methods = new Dictionary<string, LoxFunction>();
+         Dictionary<string, LoxFunction> methods = new Dictionary<string, LoxFunction>();
          foreach (var method in stmt.Methods) {
             LoxFunction function = new LoxFunction(method, environment, method.Name.Lexeme.Equals("init"));
             methods.Add(method.Name.Lexeme, function);
          }
          LoxClass klass = new LoxClass(stmt.Name.Lexeme, (LoxClass)superclass, methods);
+         if (superclass != null) environment = environment.Enclosing;
          environment.Assign(stmt.Name, klass);
          return Nothing.AtAll;
       }

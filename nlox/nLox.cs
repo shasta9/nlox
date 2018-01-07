@@ -11,7 +11,12 @@ namespace NLox {
       private static bool hadRuntimeError = false;
 
       private static void Main(string[] args) {
-         RunFile("init-return.lx");
+
+         RunFile(@"../../examples/fibonacci2.lx");
+         //RunFile("eclair.lx");
+         //RunFile("superclass.lx");
+         //RunFile("boston-cream.lx");
+         //RunFile("init-return.lx");
          //RunFile("reinit.lx");
          //RunFile("cake.lx");
          //RunFile("bacon.lx");
@@ -44,7 +49,7 @@ namespace NLox {
       }
 
       private static void RunPrompt() {
-         for (;;) {
+         for (; ; ) {
             Console.Write("> ");
             Run(Console.ReadLine());
             hadError = false;
@@ -55,7 +60,7 @@ namespace NLox {
          Scanner scanner = new Scanner(source);
          List<Token> tokens = scanner.ScanTokens();
          Parser parser = new Parser(tokens);
-         List<Stmt>statements = parser.Parse();
+         List<Stmt> statements = parser.Parse();
          // stop if there was a syntax error
          if (hadError) return;
          Resolver resolver = new Resolver(interpreter);

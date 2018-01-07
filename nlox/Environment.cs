@@ -2,16 +2,17 @@
 
 namespace NLox {
    internal class Environment {
-      private readonly Environment enclosing;
       private readonly Dictionary<string, object> values = new Dictionary<string, object>();
 
       public Environment() {
-         enclosing = null;
+         Enclosing = null;
       }
 
       public Environment(Environment enclosing) {
-         this.enclosing = enclosing;
+         Enclosing = enclosing;
       }
+
+      public Environment Enclosing { get; }
 
       public void Define(string name, object value) {
          /* this syntax overwrites an existing name or adds a new one
@@ -26,7 +27,7 @@ namespace NLox {
       private Environment Ancestor(int distance) {
          Environment environment = this;
          for (int i = 0; i < distance; i++) {
-            environment = environment.enclosing;
+            environment = environment.Enclosing;
          }
          return environment;
       }
@@ -35,8 +36,8 @@ namespace NLox {
          if (values.ContainsKey(name.Lexeme)) {
             return values[name.Lexeme];
          }
-         if (enclosing != null) {
-            return enclosing.Get(name);
+         if (Enclosing != null) {
+            return Enclosing.Get(name);
          }
          throw new RuntimeError(name, $"Undefined variable '{name.Lexeme}'.");
       }
@@ -50,8 +51,8 @@ namespace NLox {
             values[name.Lexeme] = value;
             return;
          }
-         if (enclosing != null) {
-            enclosing.Assign(name, value);
+         if (Enclosing != null) {
+            Enclosing.Assign(name, value);
             return;
          }
          throw new RuntimeError(name, $"Undefined variable '{name.Lexeme}'.");

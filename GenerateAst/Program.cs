@@ -15,6 +15,7 @@ namespace GenerateAst {
                     "Literal  : object value",
                     "Logical  : Expr left, Token opr, Expr right",
                     "Set      : Expr objekt, Token name, Expr value",
+                    "Super    : Token keyword, Token method",
                     "This     : Token keyword",
                     "Unary    : Token opr, Expr right",
                     "Variable : Token name"
